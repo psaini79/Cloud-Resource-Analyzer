@@ -1,0 +1,57 @@
+---
+ - name: Setting up compute on Oracle for master node on OCI
+   hosts: localhost
+   vars_files:
+     - samples/oci-launch-compute.yaml
+   roles:
+      - oci-launch-compute
+
+ - name: Settingup Docker and K8s Env
+   hosts: airflow_instance
+   become: yes
+   remote_user: opc
+   vars_files:
+     - samples/oci-docker-k8s-setup.yaml
+   roles:
+     - oracle.docker.create.fs
+     - oracle.install.docker.engine
+     - oracle.configure.docker.env
+     - oci.setup.k8s.master
+
+ - name: Setting up compute on Oracle for worker node on OCI
+   hosts: localhost
+   vars_files:
+     - samples/oci-launch-worker-1-compute.yaml
+   roles:
+      - oci-launch-compute
+
+ - name: Settingup Docker and K8s Env
+   hosts: airflow_instance
+   become: yes
+   remote_user: opc
+   vars_files:
+     - samples/oci-docker-k8s-setup.yaml
+   roles:
+     - oracle.docker.create.fs
+     - oracle.install.docker.engine
+     - oracle.configure.docker.env
+     - oci.setup.k8s.worker
+
+ - name: Setting up compute on Oracle for worker node on OCI
+   hosts: localhost
+   vars_files:
+     - samples/oci-launch-worker-2-compute.yaml
+   roles:
+      - oci-launch-compute
+
+ - name: Settingup Docker and K8s Env
+   hosts: airflow_instance
+   become: yes
+   remote_user: opc
+   vars_files:
+     - samples/oci-docker-k8s-setup.yaml
+   roles:
+     - oracle.docker.create.fs
+     - oracle.install.docker.engine
+     - oracle.configure.docker.env
+     - oci.setup.k8s.worker

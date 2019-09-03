@@ -1,0 +1,7 @@
+---
+ - name: Setting up compute on Oracle for master node on OCI
+   hosts: localhost
+   vars_files:
+     - samples/oci-launch-oke.yaml
+   roles:
+      - oci.setup.oke.cluster

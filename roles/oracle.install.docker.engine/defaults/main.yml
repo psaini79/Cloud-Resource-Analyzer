@@ -1,0 +1,20 @@
+---
+# defaults file for install_docker_engine
+
+################################################################
+##  Section - 1 : Env Varaibles for Docker/Container setup######
+################################################################
+
+setup_docker: true
+yum_repo_file: /etc/yum.repos.d/public-yum-ol7.repo
+reponame: ol7_addons
+
+###############################################################
+##  Section - 2 : Enable Disable Proxy for Docker Container####
+###############################################################
+
+docker_proxy: false
+docker_proxy_file: /etc/systemd/system/docker.service.d/http-proxy.conf
+http_proxy: Environment="HTTP_PROXY=http://www.example.com:80/"
+https_proxy: Environment="HTTPS_PROXY=https://www.example.com:443/"
+no_proxy: NO_PROXY=localhost

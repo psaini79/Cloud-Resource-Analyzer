@@ -1,0 +1,57 @@
+---
+# tasks file for install_docker_engine
+#  - name: install one specific version of Apache
+#    yum:
+#      name: oracle-softwarecollection-release-el7  
+#      state: present
+
+  - block:
+      - name: enable OL7 Addon Repo
+        ini_file:
+          dest: "{{ oracle_yum_docker_repo_file }}"
+          section: "{{ oracle_docker_reponame }}"
+          option: enabled
+          value: 1
+
+      - name: Check the docker engine  package is installed
+        yum:
+          name: docker-engine
+          state: present
+      - name: Check the docker engine service is running
+        service:
+          name: docker
+          state: started
+          enabled: True
+
+      - name: Changing settings in /etc/sysconfig/docker
+        lineinfile:
+          path: /etc/sysconfig/docker
+          regexp: '^OPTIONS='
+          line: "OPTIONS='--selinux-enabled --cpu-rt-runtime=950000'"
+
+      - block:
+          - name: Setting Proxy for Docker if docker_proxy env variable set to true
+            copy:
+              dest: "{{ oracle_docker_proxy_file }}"
+              content: |
+                [Service]
+                Environment="HTTP_PROXY={{ oracle_docker_http_proxy }}"
+                Environment="HTTP_PROXY={{ oracle_docker_https_proxy }}"
+                NO_PROXY="{{ oracle_docker_no_proxy }}"
+        when: oracle_docker_proxy_flag == true
+
+      - name: Reload systemd
+        command: systemctl daemon-reload
+
+      - name: Restart Docker Service
+        service:
+          name: docker
+          state: restarted
+
+      - name: Installing PIP on remote machine
+        command: /bin/easy_install pip
+
+      - name: Installing Docker Modules on Docker Hosts
+        pip:
+          name: ['docker-py']
+    when: oracle_install_docker_engine_flag == true

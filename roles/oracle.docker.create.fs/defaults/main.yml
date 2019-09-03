@@ -1,0 +1,10 @@
+---
+# vars file for create_docker_fs
+###############################################################################
+###  Section -1 : Env varaibles for setting up storage for docker/container####
+###############################################################################
+oracle_docker_setup_fs_flag: true
+oracle_docker_fstype: xfs
+oracle_linux_device_name: /dev/sdd
+oracle_docker_fs_mountpoint: /var/lib/docker
+oracle_docker_fs_options: -n ftype=1

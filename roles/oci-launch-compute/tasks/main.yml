@@ -1,0 +1,116 @@
+---
+# Copyright (c) 2018, 2019 Oracle and/or its affiliates.
+# This software is made available to you under the terms of the GPL 3.0 license or the Apache 2.0 license.
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+# Apache License v2.0
+# See LICENSE.TXT for details.
+    - include: setup.yaml
+    - name: Launch an instance
+      oci_instance:
+        availability_domain: "{{ instance_ad }}"
+        compartment_id: "{{ instance_compartment }}"
+        name: "{{ instance_name }}"
+        image_id: "{{ instance_image }}"
+        shape: "{{ instance_shape }}"
+        vnic:
+            assign_public_ip: True
+            hostname_label: "{{ instance_hostname }}"
+            subnet_id: "{{ instance_subnet_id }}"
+        metadata:
+            ssh_authorized_keys: "{{ lookup('file', instance_public_key) }}"
+      register: instance_result
+
+    - name: Print instance details
+      debug:
+        msg: "Launched a new instance {{ instance_result }}"
+    - set_fact:
+        instance_id: "{{instance_result.instance.id}}"
+
+    - name: Get the VNIC attachment details of instance
+      oci_vnic_attachment_facts:
+        compartment_id: "{{ instance_compartment }}"
+        instance_id: "{{ instance_id }}"
+      register: vnic_result
+
+    - name: Get details of the VNIC
+      oci_vnic_facts:
+        id: "{{ vnic_result.vnic_attachments[0].vnic_id }}"
+      register: vnic_result
+    - set_fact:
+        instance_public_ip: "{{vnic_result.vnic.public_ip}}"
+
+    - name: Print the public ip of the newly launched instance
+      debug:
+        msg: "Public IP of launched instance {{ instance_public_ip }}"
+
+    - name: Wait (upto 5 minutes) for port 22 to become open
+      wait_for:
+        port: 22
+        host: '{{ instance_public_ip }}'
+        state: started
+        delay: 10
+      vars:
+        ansible_connection: local
+
+    - name: Attempt a ssh connection to the newly launced instance
+      # Use "opc" user as this is an OL image
+      # Disable SSH's strict host key checking just for this one command invocation
+      command: ssh -o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -i {{ temp_certificates_path }}/{{ instance_private_key }} opc@{{ instance_public_ip }} uname -a
+      retries: 3
+      delay: 5
+      register: result
+      until: result.rc == 0
+
+    - name: Print SSH response from launched instance
+      debug:
+        msg: "SSH response from instance -> {{ result.stdout_lines }}"
+
+    - set_fact:
+        common_ssh_args: '-o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -i {{ temp_certificates_path }}/{{instance_private_key}} opc@{{ instance_public_ip }}'
+
+    - name: Create a new block volume
+      oci_volume:
+        availability_domain: "{{ instance_ad }}"
+        compartment_id: "{{ instance_compartment }}"
+        name: "{{ volume_name }}"
+      register: result
+    - set_fact:
+        volume_id: "{{result.volume.id }}"
+
+    - name: attach the volume to the instance
+      oci_volume_attachment:
+        instance_id: "{{ instance_id }}"
+        type: "iscsi"
+        volume_id: "{{ volume_id }}"
+      register: result
+    - set_fact:
+        volume_attachment_details: "{{ result.volume_attachment }}"
+
+    - name: Register the volume in the instance with iscsiadm
+      command: "ssh {{ common_ssh_args }} sudo iscsiadm -m node -o new -T {{ volume_attachment_details.iqn }} -p {{ volume_attachment_details.ipv4 }}:{{ volume_attachment_details.port }}"
+      register: result
+
+    - name: Configure iSCSI to automatically connect to the authenticated block storage volumes after a reboot
+      command: "ssh {{ common_ssh_args }} sudo iscsiadm -m node -T {{ volume_attachment_details.iqn }} -o update -n node.startup -v automatic"
+
+    - name: Login to the iSCSI endpoint
+      command: "ssh {{ common_ssh_args }} sudo iscsiadm -m node -T {{ volume_attachment_details.iqn }} -p {{ volume_attachment_details.ipv4 }}:{{ volume_attachment_details.port }}  -l"
+
+    - name: Check if the iSCSI device is mountable on the instance
+      command: "ssh {{ common_ssh_args }} sudo fdisk -l"
+      register: result
+    - debug: msg="{{result.stdout}}"
+
+    - name: Creating Dynamic Inventory so that other play can access public IP of newly created instance 
+      add_host:
+        name: " Dynamic Host IP {{ vnic_result.vnic.public_ip  }}"
+        groups: airflow_instance
+        ansible_host: "{{ vnic_result.vnic.public_ip  }}"
+        ansible_ssh_private_key_file: "{{ temp_certificates_path + '/' +  instance_private_key }}"
+   
+    - name: Registering DEVICE Name of the newly created instance with variable with DEVICE_NAME
+      add_host:
+        name: airflow-k8s-instance-id 
+        DEVICE_NAME: "{{ volume_attachment_details.iqn  }}"    
+     
+    #- import_tasks: teardown.yaml

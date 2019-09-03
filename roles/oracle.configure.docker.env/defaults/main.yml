@@ -1,0 +1,65 @@
+---
+# defaults file for configure_docker_env
+
+################################################################################
+# Section -1 : Parameter to start racenv setup. Default value set to true
+#
+################################################################################
+setup_racenv: true
+
+################################################################################
+# Section -2 : DETAILS ABOUT MACVLAN DOCKER BRIDGE FOR ORACLE RAC PUBLIC NETWORK
+#
+################################################################################
+
+# Specification about docker macvlan public network
+docker_pub_macvlan_bridge: false
+rac_pub_nw_mvn_name: rac_pub1_mvn_nw
+docker_pub_nw_br_mvn: macvlan
+docker_pub_nw_sub_mvn: 10.0.0.0/16
+docker_pub_nw_gw_mvn: 10.0.0.1
+parent_eth_pub_nw_mvn: eth0
+
+################################################################################
+# Section -3 : DETAILS ABOUT MACVLAN DOCKER BRIDGE FOR ORACLE RAC PRIVATE NETWORK
+#
+################################################################################
+
+# Specification about docker macvlan private network
+docker_priv_macvlan_bridge: false
+rac_priv_nw_mvn_name: rac_priv1_mvn_nw
+docker_priv_nw_br_mvn: macvlan
+docker_priv_nw_sub_mvn: 192.168.16.0/24
+docker_priv_nw_gw_mvn: 192.168.16.1
+parent_eth_priv_nw_mvn: eth0
+
+################################################################################
+# Section -4 : DETAILS ABOUT DOCKER BRIDGE FOR ORACLE RAC PUBLIC NETWORK
+#
+################################################################################
+
+# Specification about docker bridge public network
+docker_pub_bridge: true
+rac_pub_nw_name: rac_pub1_nw
+docker_pub_nw_br: bridge
+docker_pub_nw_sub: 172.16.1.0/24
+
+################################################################################
+# Section -5 : DETAILS ABOUT DOCKER BRIDGE FOR ORACLE RAC PRIVATE NETWORK
+#
+################################################################################
+
+# Specification about docker bridge private network
+docker_priv_bridge: true
+rac_priv_nw_name: rac_priv1_nw
+docker_priv_nw_br: bridge
+docker_priv_nw_sub: 192.168.17.0/24
+
+##########################################################################################
+## Section -6 : Host File name which will be shared among all the containers of rac cluster
+##
+#########################################################################################
+
+create_dir: true
+rac_host_file_dir: /opt/containers/
+rac_host_file: rac_host_file

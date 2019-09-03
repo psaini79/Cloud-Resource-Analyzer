@@ -1,0 +1,76 @@
+---
+# tasks file for create_docker_fs
+ - name: Check the mount device for "{{ docker_fs_mount_point }}"
+   shell: df -aTh | grep "{{ docker_fs_mount_point }}" | awk '{ print $1 }'
+   register: mountdevice
+   
+ - name: Check if "{{ docker_fs_mount_point }}" mounted on loop0
+   shell: systemctl stop docker && umount "{{ docker_fs_mount_point }}"
+   when: mountdevice | search("/dev/loop")
+   
+ - name: Check if "{{ docker_fs_mount_point }}" mount status
+   shell: grep -qs "{{ docker_fs_mount_point }}" /proc/mounts
+   register: checkmountstatus
+ - assert:
+    that:
+       - checkmountstatus.stdout == 1
+    msg: "{{ docker_fs_mount_point }} is not mounted. Check completed sucessfully"
+	
+ - name: Check if "{{ existing_fs_mountpoint }}" mount status
+   shell: grep -qs "{{ existing_fs_mountpoint }}" /proc/mounts
+   register: checkmountstatus
+ - assert:
+    that:
+       - checkmountstatus.stdout == 0
+    msg: "{{ existing_fs_mountpoint }} is mounted. Check completed sucessfully"
+	
+ - name: Check the mount device for "{{ existing_fs_mountpoint }}"
+   shell: df -aTh | grep "{{ docker_fs_mount_point }}" | awk '{ print $1 }'
+   register: fsmountdevice
+   
+ - name: Unmount "{{ existing_fs_mountpoint }}" mount point
+   shell: umount "{{ existing_fs_mountpoint }}"
+   register: checkmountstatus
+ - assert:
+    that:
+       - checkmountstatus.stdout == 0
+    msg: "{{ existing_fs_mountpoint }} is unmounted. Check completed sucessfully"
+	
+ - name: Clear the device
+   shell: dd if=/dev/zero of="{{ fsmountdevice }}" bs=1M count=1000
+        	
+ - name: Create a new primary partition
+  parted:
+    device: "{{ fsmountdevice }}"
+    number: 1
+    state: present
+	part_end: 50GiB
+	
+ - name: Create a new primary partition
+  parted:
+    device: "{{ fsmountdevice }}"
+    number: 2
+    state: present
+
+ - name: Create Filesystem for Docker Storage
+   filesystem:
+      fstype: "{{ oracle_docker_fstype }}"
+      dev: "{{ oracle_linux_device_name }}"
+      opts: "{{ oracle_docker_fs_options }}"
+   when: oracle_docker_setup_fs_flag == true
+
+ - name: Get the device UUID
+   shell: blkid -s UUID -o value "{{ oracle_linux_device_name }}"
+   register: blkid_contents
+
+ - name: Create a directory for docker storage
+   file:
+     path: "{{ oracle_docker_fs_mountpoint }}"
+     state: directory
+
+ - name: Mount the Filesystem for Docker Storage
+   mount:
+     path: "{{ oracle_docker_fs_mountpoint }}"
+      src: UUID="{{blkid_contents.stdout}}"
+      fstype: xfs
+      state: mounted

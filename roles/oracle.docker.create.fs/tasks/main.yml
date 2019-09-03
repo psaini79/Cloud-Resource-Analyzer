@@ -1,0 +1,36 @@
+---
+# tasks file for create_docker_fs
+#
+
+  - name: set the facts as per the instance allocated device "{{ hostvars['airflow-k8s-instance-id']['DEVICE_NAME'] }}"
+    debug:
+      msg: "{{ hostvars['airflow-k8s-instance-id']['DEVICE_NAME'] }}"
+
+  - name: Print collected facts
+    debug:
+      msg: "Allocated Device -> {{ oracle_linux_device_name }}"
+
+  - block: 
+      - name: Create Filesystem for Docker Storage
+        filesystem:
+           fstype: "{{ oracle_docker_fstype }}"
+           dev: "{{ oracle_linux_device_name }}"
+           opts: "{{ oracle_docker_fs_options }}"
+        when: oracle_docker_setup_fs_flag == true
+
+      - name: Get the device UUID
+        shell: blkid -s UUID -o value "{{ oracle_linux_device_name }}"
+        register: blkid_contents
+
+      - name: Create a directory for docker storage
+        file:
+           path: "{{ oracle_docker_fs_mountpoint }}"
+           state: directory
+
+      - name: Mount the Filesystem for Docker Storage
+        mount:
+           path: "{{ oracle_docker_fs_mountpoint }}"
+           src: UUID="{{blkid_contents.stdout}}"
+           fstype: xfs
+           state: mounted
+    when: oracle_docker_setup_fs_flag == true

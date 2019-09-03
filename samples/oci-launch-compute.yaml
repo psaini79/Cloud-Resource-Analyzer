@@ -1,0 +1,26 @@
+quad_zero_route: "0.0.0.0/0"
+TCP_protocol: "6"
+SSH_port: "22"
+vcn_name: "aflowvcn"
+vcn_cidr_block: "172.16.1.0/24"
+vcn_dns_label: "aflowvcn"
+ig_name: "internetgatewayformyaflowvcn"
+route_table_name: "aflowroutetable"
+route_table_rules:
+   - cidr_block: "{{ quad_zero_route }}"
+     network_entity_id: "{{ ig_id }}"
+subnet_cidr: "172.16.1.0/24"
+subnet_name: "aflowsubnet"
+subnet_dns_label: "aflowsubnet"
+securitylist_name: "aflowsecuritylist"
+instance_shape: "{{ lookup('env', 'SAMPLE_INSTANCE_SHAPE') | default('VM.Standard2.1', true) }}"
+instance_hostname: "airflow-k8smaster1"
+instance_ad: "{{ lookup('env', 'SAMPLE_AD_NAME') }}"
+instance_compartment: "{{ lookup('env', 'SAMPLE_COMPARTMENT_OCID') }}"
+instance_image: "{{ lookup('env', 'SAMPLE_IMAGE_OCID') }}"
+instance_public_key: 
+instance_private_key: bmc_cloud_openssh_keys
+instance_name: airflow-k8smaster1
+temp_certificates_path: 
+volume_name: airflow-k8s-master1-vol
+ssh_args: '-o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -i'

@@ -1,0 +1,76 @@
+---
+# tasks file for install_docker_engine
+#  - name: install one specific version of Apache
+#    yum:
+#      name: oracle-softwarecollection-release-el7  
+#      state: present
+
+  - block:
+      - name: enable OL7 Addon Repo
+        ini_file:
+          dest: "{{ oracle_yum_docker_repo_file }}"
+          section: "{{ oracle_docker_reponame }}"
+          option: enabled
+          value: 1
+
+      - name: Check the kubeadm  package is installed
+        yum:
+          name: kubeadm
+          state: present
+
+      - name: Check the kubelet package is installed
+        yum:
+          name: kubelet
+          state: present
+
+      - name: Check the kubectl  package is installed
+        yum:
+          name: kubectl
+          state: present
+
+#      - name: Installing and configuring K8s master Node
+#        command: /bin/kubeadm-setup.sh up
+
+#      - name: Creating $HOME/.kube on remote machine
+#        command: mkdir -p $HOME/.kube 
+
+#      - name: Create a copy of the Kubernetes admin.conf file in the .kube directory 
+#        command: cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+
+#      - name: Change the ownership of the file to match your regular user profile
+#        command: chown $(id -u):$(id -g) $HOME/.kube/config
+
+#      - name: Export the path to the file for the KUBECONFIG environment variable
+#        command: echo "export KUBECONFIG=$HOME/.kube/config" >> $HOME/.bashrc 
+
+#      - name: Generate token for worker node
+#        shell: /bin/kubeadm token list | cut -d ' ' -f1 | sed -n '2p'
+#        register: K8S_TOKEN
+          
+#      - name: "Retrieving CA Hash for the worker Node"
+#        shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+#        register: K8S_MASTER_CA_HASH
+
+#      - name: "Get the IP of master Node Node"
+#        shell: /bin/hostname -I | awk '{print $1}'
+#        register: K8S_MASTER_NODE_IP
+
+#      - name: "Add K8S Token and Hash to dummy host"
+#        add_host:
+#          name:   "K8S_TOKEN_HOLDER"
+#          token:  "{{ K8S_TOKEN.stdout }}"
+#          hash:   "{{ K8S_MASTER_CA_HASH.stdout }}"
+#          ip: "{{ K8S_MASTER_NODE_IP.stdout }}"
+
+#      - name:
+#        debug:
+#          msg: "[Master] K8S_TOKEN_HOLDER K8S token is {{ hostvars['K8S_TOKEN_HOLDER']['token'] }}"
+
+#      - name:
+#        debug:
+#          msg: "[Master] K8S_TOKEN_HOLDER K8S Hash is  {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
+
+#      - name:
+#        debug:
+#          msg: "[Master] K8S_TOKEN_HOLDER K8S IP is  {{ hostvars['K8S_TOKEN_HOLDER']['ip'] }}"
+

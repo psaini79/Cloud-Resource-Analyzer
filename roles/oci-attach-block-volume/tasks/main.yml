@@ -1,0 +1,64 @@
+---
+# tasks file for oci-attach-block-volume
+
+#
+#
+#
+    - name: set the facts as per the Instance id "{{ hostvars['airflow-k8s-instance-id']['INSTANCE_ID'] }}" and instance public ip "{{ hostvars['airflow-k8s-instance-id']['INSTANCE_IP'] }}"
+      set_fact:
+       instance_id : "{{ hostvars['airflow-k8s-instance-id']['INSTANCE_ID'] }}"
+       instance_public_ip : "{{ hostvars['airflow-k8s-instance-id']['INSTANCE_IP'] }}"
+
+    - name: Print collected facts
+      debug:
+        msg: "Instance public IP -> {{ instance_public_ip  }} and instance id -> {{ instance_id }}"
+
+
+    - set_fact:
+        common_ssh_args: '-o "UserKnownHostsFile=/dev/null" -o "StrictHostKeyChecking=no" -i {{ temp_certificates_path }}/{{instance_private_key}} opc@{{ instance_public_ip }}'
+
+    - name: Attempt a ssh connection to the newly launced instance
+      command: ssh -i "/home/psaini/cloud_keys/bmc_cloud_openssh_keys " opc@{{ instance_public_ip }} uname -a
+      retries: 3
+      delay: 5
+      register: result
+      until: result.rc == 0
+
+    - name: Print SSH response from launched instance
+      debug:
+        msg: "SSH response from instance -> {{ result.stdout_lines }}"
+    - assert: { that: "'Linux instance' in result.stdout" }
+                
+
+    - name: Create a new block volume
+      oci_volume:
+        availability_domain: "{{ instance_ad }}"
+        compartment_id: "{{ instance_compartment }}"
+        name: "{{ volume_name }}"
+      register: result
+    - set_fact:
+        volume_id: "{{result.volume.id }}"
+
+    - name: attach the volume to the instance
+      oci_volume_attachment:
+        instance_id: "{{ instance_id }}"
+        type: "iscsi"
+        volume_id: "{{ volume_id }}"
+      register: result
+    - set_fact:
+        volume_attachment_details: "{{ result.volume_attachment }}"
+
+    - name: Register the volume in the instance with iscsiadm
+      command: "ssh {{ common_ssh_args }} sudo iscsiadm -m node -o new -T {{ volume_attachment_details.iqn }} -p {{ volume_attachment_details.ipv4 }}:{{ volume_attachment_details.port }}"
+      register: result
+
+    - name: Configure iSCSI to automatically connect to the authenticated block storage volumes after a reboot
+      command: "ssh {{ common_ssh_args }} sudo iscsiadm -m node -T {{ volume_attachment_details.iqn }} -o update -n node.startup -v automatic"
+
+    - name: Login to the iSCSI endpoint
+      command: "ssh {{ common_ssh_args }} sudo iscsiadm -m node -T {{ volume_attachment_details.iqn }} -p {{ volume_attachment_details.ipv4 }}:{{ volume_attachment_details.port }}  -l"
+
+    - name: Check if the iSCSI device is mountable on the instance
+      command: "ssh {{ common_ssh_args }} sudo fdisk -l"
+      register: result
+    - debug: msg="{{result.stdout}}"
