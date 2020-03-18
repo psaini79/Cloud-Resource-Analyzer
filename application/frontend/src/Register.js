@@ -67,7 +67,7 @@ class Register extends Component {
       userLabel="User Id";
     }
     else{
-      userhintText="Enter your Teacher Id";
+      userhintText="Enter your User Id";
       userLabel="Teacher Id";
     }
     return (

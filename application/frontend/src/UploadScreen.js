@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-
+import { Tabs, Paper } from 'material-ui';
+import Tab from 'material-ui/Tabs';
 import  Iframe from "./iframe.js";
 /*
 Screen:LoginScreen
@@ -205,7 +206,7 @@ handleLogout(event){
       </MuiThemeProvider>
           </div> */}
 
-    <Iframe
+    {/* <Iframe
 
 url="http://localhost:4000/"
         width="1500px"
@@ -215,7 +216,10 @@ url="http://localhost:4000/"
         display="initial"
         position="relative"
         allowFullScreen
-      />
+      /> */}
+
+
+
           </div>
     );
   }

@@ -7,7 +7,7 @@ import FontIcon from 'material-ui/FontIcon';
 import {blue500, red500, greenA200} from 'material-ui/styles/colors';
 import UploadScreen from './UploadScreen';
 import Pastfiles from './Pastfiles';
-import LoginScreen from './Loginscreen'
+import LoginScreen from './Loginscreen';
 
 class App extends Component {
   constructor(props) {

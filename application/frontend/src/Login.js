@@ -8,12 +8,14 @@ import MenuItem from 'material-ui/MenuItem';
 var apiBaseUrl = "http://localhost:4000/api/";
 import axios from 'axios';
 import UploadPage from './UploadPage';
+import MainScreen from './MainScreen';
+import MainScreen1 from './MainScreen1';
 class Login extends Component {
   constructor(props){
     super(props);
     var localloginComponent=[];
     localloginComponent.push(
-      <MuiThemeProvider key={"theme"}>
+      <MuiThemeProvider key={"theme"} >
         <div>
          <TextField
            hintText="Enter your user id"
@@ -50,7 +52,7 @@ class Login extends Component {
         <MuiThemeProvider>
           <div>
            <TextField
-             hintText="Enter your user id"
+             hintText="Enter your user "
              floatingLabelText="User Id"
              onChange = {(event,newValue) => this.setState({username:newValue})}
              />
@@ -68,44 +70,19 @@ class Login extends Component {
       )
       this.setState({menuValue:1,loginComponent:localloginComponent,loginRole:'user'})
     }
-    // else if(this.props.role == 'teacher'){
-    //   console.log("in teacher componentWillMount");
-    //   var localloginComponent=[];
-    //   localloginComponent.push(
-    //     <MuiThemeProvider>
-    //       <div>
-    //        <TextField
-    //          hintText="Enter your College Rollno"
-    //          floatingLabelText="Teacher Id"
-    //          onChange={(event,newValue) => this.setState({username:newValue})}
-    //          />
-    //        <br/>
-    //          <TextField
-    //            type="password"
-    //            hintText="Enter your Password"
-    //            floatingLabelText="Password"
-    //            onChange={(event,newValue) => this.setState({password:newValue})}
-    //            />
-    //          <br/>
-    //          <RaisedButton label="Submit" primary={true} style={style} onClick={(event) => this.handleClick(event)}/>
-    //      </div>
-    //      </MuiThemeProvider>
-    //   )
-    //   this.setState({menuValue:2,loginComponent:localloginComponent,loginRole:'teacher'})
-    // }
   }
   }
   handleClick(event){
     console.log('rajibabu');
 
-      var self = this;
+    var self = this;
     var payload={
       "userid":this.state.username,
 	    "password":this.state.password,
       "role":this.state.loginRole
     }
     var uploadScreen=[];
-        uploadScreen.push(<UploadPage appContext={self.props.appContext} role={self.state.loginRole}/>)
+        uploadScreen.push(<MainScreen1/>)
         self.props.appContext.setState({loginPage:[],uploadScreen:uploadScreen})
           
   
@@ -190,11 +167,12 @@ class Login extends Component {
     return (
       <div>
         <MuiThemeProvider>
-        <AppBar
+     
+        <AppBar 
              title="Cloud Resource Analyzer - 
                     Monitor and Analyze Cloud Resources"
            />
-        </MuiThemeProvider>
+       </MuiThemeProvider>
         <MuiThemeProvider>
         <div>
         <p>Login</p>
