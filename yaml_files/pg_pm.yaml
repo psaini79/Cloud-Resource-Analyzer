@@ -1,0 +1,106 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: pg-prometheus 
+spec:
+  template:
+    metadata:
+      labels:
+        app: pg-prometheus
+    spec:
+      hostname: pghost
+      initContainers:
+      - name: testcon
+        image: timescale/pg_prometheus:latest-pg11
+        imagePullPolicy: "IfNotPresent"
+        command:
+        - "bin/bash"
+        - "-c"
+        - "[ -d '/var/lib/postgresql/data' ] && echo 'Directory /var/lib/postgresql/data  exists' || mkdir -p /var/lib/postgresql/data"
+        volumeMounts:
+        - mountPath: /var/lib/postgresql
+          name: postgredb
+      containers:
+       - name: postgredb
+         persistentVolumeClaim:
+           claimName: pg-prometheus-pv-claim
+      nodeSelector:
+       failure-domain.beta.kubernetes.io/zone: PHX-AD-1
+      containers:
+      - name: pg-prometheus
+        image: timescale/pg_prometheus:latest-pg11
+        imagePullPolicy: "IfNotPresent"
+        command:
+        - "/bin/bash"
+        - "-c"
+        - "/usr/local/bin/docker-entrypoint.sh postgres -csynchronous_commit=off"
+        ports:
+        - containerPort: 5432
+          name: pg-port1
+        env:
+        - name: POSTGRES_PASSWORD
+          value: mypass
+        - name: POSTGRES_USER
+          value: postgres
+        volumeMounts:
+        - mountPath: /var/lib/postgresql
+          name: postgredb
+      - name: prometheus-postgresql-adapter 
+        image: timescale/prometheus-postgresql-adapter:latest 
+        imagePullPolicy: "IfNotPresent"
+        command:
+        - "/bin/sh"
+        - "-c"
+        - "/prometheus-postgresql-adapter -pg-host=pghost -pg-password=mypass -pg-prometheus-log-samples"
+        ports:
+        - containerPort: 9201  
+          name: pg-port2
+        volumeMounts:
+        - mountPath: /var/lib/postgresql
+          name: postgredb
+      - name: prometheus-app 
+        image: prom/prometheus
+        imagePullPolicy: "IfNotPresent"
+        command: ["/bin/sh", "-c"]
+        args:
+          - mkdir -p /etc/prometheus; 
+            cp /var/lib/postgresql/sample-docker-prometheus.yml /etc/prometheus/prometheus.yml;
+            ls -ltr /etc/prometheus/prometheus.yml; 
+            ls -ltr /;
+            cat /etc/prometheus/prometheus.yml;
+            /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles;
+        ports:
+        - containerPort: 9090
+          name: pg-port3
+        volumeMounts:
+        - mountPath: /var/lib/postgresql
+          name: postgredb
+      volumes:
+       - name: postgredb
+         persistentVolumeClaim:
+           claimName: pg-prometheus-pv-claim
+      nodeSelector:
+       failure-domain.beta.kubernetes.io/zone: PHX-AD-1
+---
+ apiVersion: v1
+ kind: Service
+ metadata:
+   name: pg-prometheuss-lb
+ spec:
+  type: LoadBalancer
+  selector:
+    app: pg-prometheuss
+  ports:
+    - name: pg-port1
+      protocol: TCP
+      port: 5432
+      targetPort: pg-port1
+    - name: pg-port2
+      protocol: TCP
+      port: 9201
+      targetPort: pg-port2
+    - name: pg-port3
+      protocol: TCP
+      port: 9090
+  selector:
+    app: pg-prometheuss

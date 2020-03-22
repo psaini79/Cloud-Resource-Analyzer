@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pg-prometheus-pv-claim
+  labels:
+    app: pg-prometheus
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: oci
+  selector:
+    matchLabels: 
+      failure-domain.beta.kubernetes.io/zone: PHX-AD-1

@@ -1,0 +1,79 @@
+#
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cra3app
+  labels:
+    app: cra3app-dep
+spec:
+  selector:
+    matchLabels:
+     app: cra3app-dep
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: cra3app-dep
+    spec:
+      hostname: crapphost 
+      volumes:
+      - name: cgroup1
+        hostPath:
+         path: /sys/fs/cgroup
+      - name: bootvol
+        hostPath:
+         path: /boot
+      - name: myshm
+        emptyDir:
+         medium: Memory
+      - name: myrun
+        emptyDir:
+         medium: Memory
+      containers:
+      - image: 
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN", "SYS_NICE", "SYS_RESOURCE"]
+        name: cra3app
+        volumeMounts:
+        - mountPath: "/boot"
+          name: bootvol
+        - mountPath: "/dev/shm"
+          name: myshm
+        - mountPath: "/sys/fs/cgroup"
+          name: cgroup1
+        - mountPath: "/run"
+          name: myrun
+        ports:
+        - containerPort: 8080
+          name: app3-appport
+        - containerPort: 8081
+          name: app3-onslport
+        - containerPort: 22
+          name: app3-sshport
+      nodeSelector:
+        failure-domain.beta.kubernetes.io/zone: PHX-AD-1
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: cra3app
+spec:
+ type: LoadBalancer
+ selector:
+   app: cra3app-dep
+ ports:
+   - name: app3-appport
+     protocol: TCP
+     port: 8080
+     targetPort: app3-appport
+   - name: app3-onslport
+     protocol: TCP
+     port: 8081
+   - name: app3-sshport
+     protocol: TCP
+     port: 22
+ selector:
+   app: cra3app-dep
