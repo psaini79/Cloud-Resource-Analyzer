@@ -58,23 +58,6 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/postgresql
           name: postgredb
-      - name: prometheus-app 
-        image: prom/prometheus
-        imagePullPolicy: "IfNotPresent"
-        command: ["/bin/sh", "-c"]
-        args:
-          - mkdir -p /etc/prometheus; 
-            cp /var/lib/postgresql/sample-docker-prometheus.yml /etc/prometheus/prometheus.yml;
-            ls -ltr /etc/prometheus/prometheus.yml; 
-            ls -ltr /;
-            cat /etc/prometheus/prometheus.yml;
-            /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles;
-        ports:
-        - containerPort: 9090
-          name: pg-port3
-        volumeMounts:
-        - mountPath: /var/lib/postgresql
-          name: postgredb
       volumes:
        - name: postgredb
          persistentVolumeClaim:
@@ -99,8 +82,5 @@ spec:
       protocol: TCP
       port: 9201
       targetPort: pg-port2
-    - name: pg-port3
-      protocol: TCP
-      port: 9090
   selector:
     app: pg-prometheuss
