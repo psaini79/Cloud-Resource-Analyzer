@@ -40,11 +40,11 @@ spec:
       initContainers:
       - name: testcon
         image: psaini2019/cra:v1.0 
-        imagePullPolicy: "Always"
+        imagePullPolicy: "IfNotPresent"
         command:
         - "/bin/bash"
         - "-c"
-        - "curl -OL https://github.com/psaini79/Cloud-Resource-Analyzer/raw/master/setup_scripts/setup_cra_app.sh && cp setup_cra_app.sh /scripts_app && chmod 777 /scripts_app/setup_cra_app.sh"
+        - "curl -OL https://github.com/psaini2018/Cloud-Resource-Analyzer/raw/master/setup_scripts/setup_cra_app.sh && cp setup_cra_app.sh /scripts_app && chmod 777 /scripts_app/setup_cra_app.sh"
         volumeMounts:
         - mountPath: /scripts_ml
           name: scriptsmlvol 
@@ -72,7 +72,7 @@ spec:
           name: scriptsappvol
         ports:
         - containerPort: 8080
-          name: app3-appport
+          name: app3-apport
         - containerPort: 8081
           name: app3-onslport
         - containerPort: 22
@@ -83,5 +83,9 @@ spec:
           name: app3-reactport
         - containerPort: 5901
           name: app3-vncport
+        - containerPort: 443
+          name: app3-https
+        - containerPort: 80
+          name: app3-http
       nodeSelector:
         failure-domain.beta.kubernetes.io/zone: PHX-AD-1
