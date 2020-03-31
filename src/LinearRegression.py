@@ -436,6 +436,7 @@ plotCoefficients(lr)
 
 
 import pickle
-filename = '../../models/linear_regression.model'
+from settings import ML_LR_MODEL
+filename = ML_LR_MODEL
 pickle.dump(lr, open(filename, 'wb'))
 

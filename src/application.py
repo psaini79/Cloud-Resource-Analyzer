@@ -22,7 +22,7 @@ def triggerML():
     error = None
     if request.method == 'POST':
         tenantname = request.form['tenant_name']
-        period = request.form['period']
+        #period = request.form['period']
         xtest = {} #read from promql
         predicted_data = linearRegression(xtest)
         #write into promql
