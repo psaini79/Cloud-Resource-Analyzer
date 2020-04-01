@@ -8,6 +8,24 @@
 source /opt/cra/scripts/env_file.sh
 source "$SCRIPT_DIR/functions.sh"
 
+
+
+
+######## FIREWALL BLOCK BEGIN HERE #############
+
+
+systemctl stop firewalld
+
+systemctl disable firewalld
+
+
+######  FIREWALL BLOCKS ENDS HERE ############
+
+
+
+
+
+
 ###### NGINX SERVER BLOCK BENGINS HERE  ###################
 print_message "Installing Nginx"
 
