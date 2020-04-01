@@ -7,17 +7,13 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Grafana from './Grafana';
-import Resources from './Resources';
 import Resources3 from './Resources3';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Login from './Login';
-import Header from './Header';
 import Header1 from './Header1';
-import Grid from './Grid';
 function TabPanel(props) {
 
-  
+
   const { children, value, index, ...other } = props;
+
 
   return (
     <Typography
@@ -49,11 +45,13 @@ function a11yProps(index) {
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
- //   backgroundColor: theme.palette.background.paper,
+    //   backgroundColor: theme.palette.background.paper,
   },
 }));
 
-export default function SimpleTabs() {
+export default function SimpleTabs(props) {
+
+  console.log("User Id in Simple  " + props.userId);
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
@@ -62,32 +60,35 @@ export default function SimpleTabs() {
   };
 
   return (
-      <Fragment >
-        <div  >
-       
-          <Header1 />
-       
-          <AppBar position="relative" style={style}>
-            <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-              <Tab label="ENTER RESOURCES" {...a11yProps(0)} />
-              <Tab label="CURRENT WORKLOAD" {...a11yProps(1)} />
-              <Tab label="FORECAST" {...a11yProps(2)} />
-            </Tabs>
-          </AppBar>
-          <TabPanel value={value} index={0}>
-            <Resources3/>
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            <Grafana />
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            <Grafana />
-          </TabPanel>
-        </div>
-      </Fragment>
-  
+
+    <Fragment >
+      <div  >
+
+        <Header1 />
+
+        <AppBar position="relative" style={style}>
+          <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
+            <Tab label="ENTER RESOURCES" {...a11yProps(0)} />
+            <Tab label="CURRENT WORKLOAD" {...a11yProps(1)} />
+            <Tab label="FORECAST" {...a11yProps(2)} />
+          </Tabs>
+        </AppBar>
+        <TabPanel value={value} index={0}>
+          <Resources3 userId = {props.userId}/>
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <Grafana />
+        </TabPanel>
+        <TabPanel value={value} index={2}>
+          <Grafana />
+        </TabPanel>
+      </div>
+    </Fragment>
+
+
 
   );
+
 }
 const style = {
   margin: 15,
