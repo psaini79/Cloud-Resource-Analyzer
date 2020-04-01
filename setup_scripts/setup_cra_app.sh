@@ -34,4 +34,19 @@ systemctl status nginx | tee -a $logfile
 
 print_message "Setting up Grafana"
 
+mv grafana-6.6.2-1.x86_64.rpm /opt/cra/software/ 
+
 ######  GRAFANA BLOCKS ENDS HERE ############
+
+
+
+
+######## PROMETHEUS BLOCK BEGIN HERE #############
+
+print_message "Setting up Prometheus"
+print_message "Untar Prometheus"
+tar -xvf /opt/cra/software/prometheus-2.11.2.linux-amd64.tar.gz
+
+ 
+
+######  PROMETHEUS BLOCKS ENDS HERE ############
