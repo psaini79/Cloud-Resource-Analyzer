@@ -72,4 +72,6 @@ records = con.db_fetch()
 
 #gets data in pandaframes
 dataframe = con.db_getPDFrame(system)
- 
+
+#close the sesssion
+con.close() 
