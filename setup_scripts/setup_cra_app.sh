@@ -89,12 +89,44 @@ print_message "Start Prometheus"
 
 
 
+######## NODE INSTALLATION BLOCK BEGIN HERE #############
+
+print_message "Node installation"
+curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+
+yum install -y nodejs
+
+ 
+
+######  NODE INSTALLATION BLOCKS ENDS HERE ############
+
+
+
 ######## CLONE PROJECT BLOCK BEGIN HERE #############
 
-print_message "git clone"
+print_message "Project clone"
+git clone https://github.com/psaini2018/Cloud-Resource-Analyzer
+
+print_message "Install node modules"
+cd Cloud-Resource-Analyzer/application/frontend
+npm install
+
+npm install @material-ui/core
+npm install @material-ui/icons
+npm install material-ui-dialogs
+
+
+print_message "Build React app"
+npm run build
+
+print_message "Move build files to nginx"
+mv build/* /usr/share/nginx/html
+
+print_message "Move config files to nginx"
 
 
 
-
+print_message "Move to root directory"
+cd / 
 
 ######  CLONE PROJECT BLOCK ENDS HERE ############
