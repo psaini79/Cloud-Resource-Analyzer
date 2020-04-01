@@ -1,0 +1,87 @@
+#
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cra3ml
+  labels:
+    app: cra3ml-dep
+spec:
+  selector:
+    matchLabels:
+     app: cra3ml-dep
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: cra3ml-dep
+    spec:
+      hostname: crapphost 
+      volumes:
+      - name: cgroup1
+        hostPath:
+         path: /sys/fs/cgroup
+      - name: bootvol
+        hostPath:
+         path: /boot
+      - name: myshm
+        emptyDir:
+         medium: Memory
+      - name: myrun
+        emptyDir:
+         medium: Memory
+      - name: scriptsmlvol
+        emptyDir:
+         medium: Memory
+      - name: scriptsappvol
+        emptyDir:
+         medium: Memory
+      initContainers:
+      - name: testcon
+        image: psaini2019/cra:v1.0 
+        imagePullPolicy: "IfNotPresent"
+        command:
+        - "/bin/bash"
+        - "-c"
+        - "curl -OL https://github.com/psaini79/Cloud-Resource-Analyzer/blob/master/setup_scripts/setup_cra_app.sh && cp setup_cra_app.sh /scripts_app && chmod 777 /scripts_app/setup_cra_app.sh"
+        volumeMounts:
+        - mountPath: /scripts_ml
+          name: scriptsmlvol 
+        - mountPath: /scripts_app
+          name: scriptsappvol
+      containers:
+      - image: psaini2019/cra:v1.0
+        imagePullPolicy: "IfNotPresent"
+        securityContext:
+          capabilities:
+            add: ["NET_ADMIN", "SYS_NICE", "SYS_RESOURCE"]
+        name: cra3ml
+        volumeMounts:
+        - mountPath: "/boot"
+          name: bootvol
+        - mountPath: "/dev/shm"
+          name: myshm
+        - mountPath: "/sys/fs/cgroup"
+          name: cgroup1
+        - mountPath: "/run"
+          name: myrun
+        - mountPath: /scripts_ml
+          name: scriptsmlvol
+        - mountPath: /scripts_app
+          name: scriptsappvol
+        ports:
+        - containerPort: 8080
+          name: app3-appport
+        - containerPort: 8081
+          name: app3-onslport
+        - containerPort: 22
+          name: app3-sshport
+        - containerPort: 9090 
+          name: app3-pmport
+        - containerPort: 3001
+          name: app3-reactport
+        - containerPort: 5901
+          name: app3-vncport
+      nodeSelector:
+        failure-domain.beta.kubernetes.io/zone: PHX-AD-2

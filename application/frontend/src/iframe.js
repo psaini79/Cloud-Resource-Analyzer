@@ -1,3 +1,5 @@
+import React, { createRef } from "react"
+import objectAssign from "object-assign"
 var __assign =
     (this && this.__assign) ||
     function() {
@@ -12,8 +14,7 @@ var __assign =
             }
         return __assign.apply(this, arguments)
     }
-import React, { createRef } from "react"
-import objectAssign from "object-assign"
+
 var Iframe = function(_a) {
     var url = _a.url,
         allowFullScreen = _a.allowFullScreen,

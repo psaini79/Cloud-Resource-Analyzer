@@ -4,11 +4,10 @@ import { AppBar, Toolbar, ListItemText } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import CreateDialog from './CreateDialog.js';
-import InstanceName from './InstanceName.js';
-
-
+import { Delete } from '@material-ui/icons';
+import { ListItem, IconButton } from 'material-ui';
 import List from '@material-ui/core/ListItem';
-
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import { Paper } from '@material-ui/core';
 
 export default class Resources1 extends Component {
@@ -37,9 +36,9 @@ export default class Resources1 extends Component {
 
     render() {
         const { instanceNames } = this.state;
-
+        
         return (
-            <Paper width="50%">
+            <div>
                 <MuiThemeProvider>
                     <AppBar position='relative' style={style} >
                         <Toolbar  >
@@ -50,17 +49,35 @@ export default class Resources1 extends Component {
                         </Toolbar>
                     </AppBar>
 
+                    <List component="ul">
 
-                  
+                    {
+                        instanceNames.map(insta => {
+                            return (
+                                
+                                    <ListItem>
+                                        <ListItemText primary={insta}>
+                                        </ListItemText >
 
-                        {
-                            instanceNames.map(insta => 
-                                <InstanceName insta={insta}></InstanceName>
-                            )}
+                                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                      
 
-                
+                                        <ListItemSecondaryAction>
+                                            <IconButton >
+                                                <Delete />
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                        
+                                    </ListItem>
+                                                                                                    
+                            );
+                        })}
+
+</List>
+
                 </MuiThemeProvider>
-            </Paper>
+            </div>
 
 
 
@@ -75,7 +92,7 @@ const style = {
     padding: 5,
     marginTop: 5,
     marginBottom: 5,
-    marginLeft: 0,
+    marginLeft: 15,
     align: 'center',
     background: '#87CEFA'
 };

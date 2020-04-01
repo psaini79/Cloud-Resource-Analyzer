@@ -20,13 +20,13 @@ import Drawer from 'material-ui/Drawer';
 //import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon';
 import {blue500, red500, greenA200} from 'material-ui/styles/colors';
-
+import Dropzone from 'react-dropzone';
 var apiBaseUrl = "http://localhost:4000/api/";
 /*
 Module:Dropzone
 Dropzone is used for local file selection
 */
-import Dropzone from 'react-dropzone';
+
 /*
 Module:superagent
 superagent is used to handle post/get requests to server

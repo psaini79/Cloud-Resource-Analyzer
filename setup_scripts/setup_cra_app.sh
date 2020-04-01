@@ -8,6 +8,24 @@
 source /opt/cra/scripts/env_file.sh
 source "$SCRIPT_DIR/functions.sh"
 
+
+
+
+######## FIREWALL BLOCK BEGIN HERE #############
+
+
+systemctl stop firewalld
+
+systemctl disable firewalld
+
+
+######  FIREWALL BLOCKS ENDS HERE ############
+
+
+
+
+
+
 ###### NGINX SERVER BLOCK BENGINS HERE  ###################
 print_message "Installing Nginx"
 
@@ -30,8 +48,53 @@ systemctl status nginx | tee -a $logfile
 
 ######### NGINX SERVER BLOCK ENDS HERE ###########
 
+
+
+
 ######## GARAFNA BLOCK BEGIN HERE #############
 
 print_message "Setting up Grafana"
+mv grafana-6.6.2-1.x86_64.rpm /opt/cra/software/ 
+
+print_message "Install Grafana"
+yum install /opt/cra/software/grafana-6.6.2-1.x86_64.rpm
+
+print_message "Reload systemd"
+systemctl daemon-reload
+
+print_message "Start Grafana"
+systemctl start grafana-server
+
+print_message "Enabale Grafana Server"
+systemctl enable grafana-server
+
 
 ######  GRAFANA BLOCKS ENDS HERE ############
+
+
+
+
+######## PROMETHEUS BLOCK BEGIN HERE #############
+
+print_message "Setting up Prometheus"
+print_message "Untar Prometheus"
+tar -xvf /opt/cra/software/prometheus-2.11.2.linux-amd64.tar.gz -C /opt/cra/software/
+
+print_message "Start Prometheus"
+/opt/cra/software/prometheus-2.11.2.linux-amd64/./prometheus --config.file=/opt/cra/software/prometheus-2.11.2.linux-amd64/prometheus.yml
+ 
+
+######  PROMETHEUS BLOCKS ENDS HERE ############
+
+
+
+
+######## CLONE PROJECT BLOCK BEGIN HERE #############
+
+print_message "git clone"
+
+
+
+
+
+######  CLONE PROJECT BLOCK ENDS HERE ############
