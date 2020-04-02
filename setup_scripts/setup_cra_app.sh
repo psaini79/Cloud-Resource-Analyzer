@@ -121,7 +121,7 @@ print_message "Project clone"
 git clone https://github.com/psaini2018/Cloud-Resource-Analyzer
 
 print_message "Install node modules"
-cd Cloud-Resource-Analyzer/application/frontend
+cd /Cloud-Resource-Analyzer/application/frontend
 npm install
 
 npm install @material-ui/core
@@ -132,8 +132,11 @@ npm install material-ui-dialogs
 print_message "Build React app"
 npm run build
 
+
+rm -rf /usr/share/nginx/html/*
+
 print_message "Move build files to nginx"
-mv build/* /usr/share/nginx/html
+cp -R build/* /usr/share/nginx/html
 
 print_message "Move config files to nginx"
 
