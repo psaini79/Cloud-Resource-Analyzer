@@ -5,7 +5,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 import axios from 'axios';
 import SimpleTabs from './MainScreen1';
-var apiBaseUrl = "http://localhost:8080";
+var apiBaseUrl = "http://129.146.192.214:8080";
 
 class Login extends Component {
   constructor(props) {

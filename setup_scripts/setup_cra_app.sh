@@ -162,9 +162,9 @@ source ~/.bashrc
 
 ######## SPRINGBOOT APPLICATION BLOCK BEGIN HERE #############
 
-print_message "Maven run"
-cd /Cloud-Resource-Analyzer/application/backend/
-mvn clean install
+print_message "Start application"
+cd /Cloud-Resource-Analyzer/application/backend/target
+java -jar backend-0.0.1-SNAPSHOT.jar
 
 
 print_message "Move to root directory"
