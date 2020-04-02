@@ -1,0 +1,15 @@
+masterproject/backend/service/impl/UserServiceImpl.class
+masterproject/backend/App.class
+masterproject/backend/dao/UserDao.class
+masterproject/backend/utilities/DBConfig.class
+masterproject/backend/dao/impl/UserDaoImpl.class
+masterproject/backend/model/Login.class
+masterproject/backend/dao/BaseDao.class
+masterproject/backend/SecurityConfig.class
+masterproject/backend/BeanConfig.class
+masterproject/backend/controller/UserController.class
+masterproject/backend/model/Tenancy.class
+masterproject/backend/model/UserInput.class
+masterproject/backend/model/EC2Instance.class
+masterproject/backend/service/UserService.class
+masterproject/backend/Application.class
