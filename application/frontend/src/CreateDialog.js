@@ -10,7 +10,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { Add, VerticalAlignTop } from '@material-ui/icons';
 import axios from 'axios';
 
-var apiBaseUrl = "http://localhost:8080";
+var apiBaseUrl = "http://129.146.192.214:8080";
 
 class CreateDialog extends Component {
     state = {

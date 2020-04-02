@@ -18,7 +18,7 @@ import { Button } from '@material-ui/core';
 import TextField from 'material-ui/TextField';
 
 
-var apiBaseUrl = "http://localhost:8080/";
+var apiBaseUrl = "http://129.146.192.214:8080/";
 
 const useStyles = makeStyles({
     table: {
