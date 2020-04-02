@@ -41,6 +41,10 @@ print_message "Doing yum install for nginx"
 yum -y install nginx | tee -a $logfile
 print_message "Checking nginx status"
 systemctl status nginx | tee -a $logfile
+
+print_message "Copy config file"
+cp /Cloud-Resource-Analyzer/configs/nginx.conf /etc/nginx/ 
+
 print_message "Starting nginx server"
 systemctl start nginx.service | tee -a $logfile
 print_message "Checking nginx Status"
@@ -59,14 +63,23 @@ mv grafana-6.6.2-1.x86_64.rpm /opt/cra/software/
 print_message "Install Grafana"
 yum install /opt/cra/software/grafana-6.6.2-1.x86_64.rpm
 
+print_message "Open port"
+echo "http_port = 3000" >> /etc/grafana/grafana.ini
+
+print_message "Allow Embedding"
+echo "allow_embedding = true" >> /etc/grafana/grafana.ini
+
 print_message "Reload systemd"
 systemctl daemon-reload
 
 print_message "Start Grafana"
 systemctl start grafana-server
 
-print_message "Enabale Grafana Server"
+print_message "Enable Grafana Server"
 systemctl enable grafana-server
+
+
+
 
 
 ######  GRAFANA BLOCKS ENDS HERE ############
@@ -148,11 +161,11 @@ print_message "Untar maven"
 tar -xvf apache-maven-3.6.3-bin.tar.gz
 
 
-vi ~/.bashrc
+#vi ~/.bashrc
 
-echo "export PATH=/opt/cra/software/apache-maven-3.6.3/bin:$PATH" >> ~/.bashrc
+#echo "export PATH=/opt/cra/software/apache-maven-3.6.3/bin:$PATH" >> ~/.bashrc
 
-source ~/.bashrc 
+#source ~/.bashrc 
  
 
 ######  MAVEN INSTALLATION BLOCKS ENDS HERE ############
