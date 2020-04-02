@@ -39,7 +39,7 @@ class PostgresDb(object):
 	def db_getPDFrame(self, query):
 		""" Executes the query and return the data in panda frame"""
 		dataframe = sqlio.read_sql_query(query, self.connection)
-		return dataframe
+		return dataframe.dropna()
 
 	def db_close(self):
 		self.session.close()	
@@ -124,29 +124,46 @@ def getDatafromDb():
 	siframe.reset_index(drop=True, inplace=True)
 	stframe.reset_index(drop=True, inplace=True)
 	iframe.reset_index(drop=True, inplace=True)
-
+	print("Done Done Done Done Done")
+	print("-------------------------------------------")
+	cuFrame = uframe[uframe.time.isin(sframe.time)]
+	cioFrame = ioframe[ioframe.time.isin(sframe.time)]
+	cirFrame = irframe[irframe.time.isin(sframe.time)]
+	cnFrame = nframe[nframe.time.isin(sframe.time)]
+	csiFrame = siframe[siframe.time.isin(sframe.time)]
+	cstFrame = stframe[stframe.time.isin(sframe.time)]
+	ciFrame = iframe[iframe.time.isin(sframe.time)]
+	print(cuFrame)
+	print(cioFrame)	
+	print("-------------------------------------------")
+	print("End End End End End End")
 	#dataframe = pd.concat([sframe, uframe], ignore_index=True)
-	dataframe = pd.concat([sframe, uframe['user'], ioframe['iowait'], irframe['irq'], nframe['nice'], siframe['softirq'], stframe['steal'], iframe['idle']], axis=1, sort=True)
+	#dataframe = pd.concat([sframe, uframe['user'], ioframe['iowait'], irframe['irq'], nframe['nice'], siframe['softirq'], stframe['steal'], iframe['idle']], axis=1, sort=True)
+	dataframe = pd.concat([sframe, cuFrame['user'], cioFrame['iowait'], cirFrame['irq'], cnFrame['nice'], csiFrame['softirq'], cstFrame['steal'], ciFrame['idle']], axis=1, sort=True)
 	#close the sesssion
 	con.db_close()
 	return dataframe
 
 def getCpuUtilization(dframe):
-	
+	"""
+	Get CPU Utilization
+	"""
+	dframe.dropna()	
 	last_idle = 0
 	last_total = 0
 	cpuUtilPct = []
 	colN = getColumnNames(dframe)
 	for index, row in dframe.iterrows():
+		#print("index: ", index)
 		cTotal = cSum(row, colN)
 		idle = row['idle']
-		print("**************************")
-		print(cTotal, idle)
+		#print("**************************")
+		#print(cTotal, idle)
 		idle_delta, total_delta = idle - last_idle, cTotal - last_total
 		last_idle, last_total = idle, cTotal
 		CpuUtilization = 100 * (1.0 - idle_delta/total_delta)
-		print(CpuUtilization)
-		print("**************************")
+		#print(CpuUtilization)
+		#print("**************************")
 		cpuUtilPct.append(CpuUtilization)
 	dframe['CpuUtilization']= cpuUtilPct
 	return dframe
@@ -159,7 +176,7 @@ def getColumnNames(df):
 	Cname = []
 	for col in df.columns:
 		Cname.append(col)
-	return Cname[1:-1]
+	return Cname[1:]
 
 def cSum(rdata, cnames):
 	"""
@@ -167,9 +184,9 @@ def cSum(rdata, cnames):
 	"""
 	cTotal = 0.0 
 	for cn in (cnames):
-		print(cn, rdata[cn])
+		#print(cn, rdata[cn])
 		cTotal += rdata[cn]
-	print("cTotal: ", cTotal)
+	#print("cTotal: ", cTotal)
 	return cTotal 
 	
 
@@ -178,6 +195,7 @@ if __name__ == "__main__":
 	print(dFrame)
 	df = getCpuUtilization(dFrame)
 	print(df)
+	"""
 	print("==============================")
 	print(dFrame['system'][0])
 	print("==============================")
@@ -190,6 +208,7 @@ if __name__ == "__main__":
 	ct = cSum(dFrame.loc[0], cnames) 
 	print("*******************************")
 	print(ct)
+	"""
 
    
 
