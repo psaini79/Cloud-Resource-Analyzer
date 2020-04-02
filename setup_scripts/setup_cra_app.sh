@@ -130,3 +130,46 @@ print_message "Move to root directory"
 cd / 
 
 ######  CLONE PROJECT BLOCK ENDS HERE ############
+
+
+
+
+
+
+######## MAVEN INSTALLATION BLOCK BEGIN HERE #############
+
+print_message "Maven installation"
+cd /opt/cra/software/
+
+print_message "Download maven"
+wget https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+
+print_message "Untar maven"
+tar -xvf apache-maven-3.6.3-bin.tar.gz
+
+
+vi ~/.bashrc
+
+echo "export PATH=/opt/cra/software/apache-maven-3.6.3/bin:$PATH" >> ~/.bashrc
+
+source ~/.bashrc 
+ 
+
+######  MAVEN INSTALLATION BLOCKS ENDS HERE ############
+
+
+
+
+######## SPRINGBOOT APPLICATION BLOCK BEGIN HERE #############
+
+print_message "Maven run"
+cd /Cloud-Resource-Analyzer/application/backend/
+mvn clean install
+
+
+print_message "Move to root directory"
+cd / 
+
+######  SPRINGBOOT APPLICATION BLOCKS ENDS HERE ############
+
+
