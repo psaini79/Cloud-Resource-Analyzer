@@ -6,6 +6,7 @@ from flask import Flask
 from flask import request
 from settings import SECRET_KEY
 from predict import linearRegression
+from database import  getDatafromDb
 
 application = Flask(__name__)
 application.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
@@ -22,8 +23,8 @@ def triggerML():
     error = None
     if request.method == 'POST':
         tenantname = request.form['tenant_name']
-        #period = request.form['period']
-        xtest = {} #read from promql
+        period = request.form['period']
+        xtest = getDatafromDb(tenantname, period)
         predicted_data = linearRegression(xtest)
         #write into promql
         return home()

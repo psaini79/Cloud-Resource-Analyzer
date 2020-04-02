@@ -61,17 +61,37 @@ steal = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE lab
 
 user = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'user'  AND name='node_cpu_seconds_total' ORDER BY time"
 
-#Creates a an object
-con = PostgresDb()
+def getDatafromDb():
+	#Creates a an object
+	con = PostgresDb()
 
-#Executes a query
-con.db_execute(system)
+	#Executes a query
+	con.db_execute(system)
 
-#fetch all records 
-records = con.db_fetch()
+	#fetch all records
+	#records = con.db_fetch()
 
-#gets data in pandaframes
-dataframe = con.db_getPDFrame(system)
+	#gets data in pandaframes
+	sData = con.db_getPDFrame(system)
+	uData = con.db_getPDFrame(user)
+	iData = con.db_getPDFrame(idle)
 
-#close the sesssion
-con.close() 
+	sframe = pd.DataFrame(data=sData)
+	sframe.rename({"node_cpu_seconds_total": "system"}, inplace=True, axis=1)
+	uframe = pd.DataFrame(data=uData)
+	uframe.rename({"node_cpu_seconds_total": "user"}, inplace=True, axis=1)
+	iframe = pd.DataFrame(data=iData)
+	iframe.rename({"node_cpu_seconds_total": "idle"}, inplace=True, axis=1)
+	print(uframe)
+	print(sframe)
+
+	dataframe = pd.concat([sframe, uframe], ignore_index=True)
+
+	#close the sesssion
+	con.db_close()
+	return dataframe
+
+if __name__ == "__main__":
+	dFrame = getDatafromDb()
+	print(dFrame)
+
