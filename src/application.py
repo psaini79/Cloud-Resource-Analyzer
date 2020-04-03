@@ -7,6 +7,8 @@ from flask import request
 from settings import SECRET_KEY
 from predict import linearRegression
 from database import  getDatafromDb
+from models import buildLinearRegressionModel
+from models import saveModel
 
 application = Flask(__name__)
 application.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
@@ -22,13 +24,19 @@ def home():
 def triggerML():
     error = None
     if request.method == 'POST':
-        tenantname = request.form['tenant_name']
-        period = request.form['period']
-        xtest = getDatafromDb(tenantname, period)
-        predicted_data = linearRegression(xtest)
+        #tenantname = request.form['tenant_name']
+        #period = request.form['period']
+        dataFrame = getDatafromDb()
+        dataFrame = processDbDataForLrTestInput(dataFrame)
+        X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
+        predicted_data = linearRegression(X_test)
         #write into promql
         return home()
 
+@application.route('/build_lr_ml', methods=['POST'])
+def buildLrModel():
+    lrmodel = buildLinearRegressionModel()
+    saveModel(lrmodel)
 
 if __name__ == "__main__":
     application.debug = True 

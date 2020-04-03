@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import TimeSeriesSplit
 from database import  getDatafromDb
 from predict import linearRegression
+from models import buildLinearRegressionModel
+from models import saveModel
 
 
 # for time-series cross-validation set 5 folds
@@ -23,7 +26,7 @@ def timeseries_train_test_split(X, y, test_size):
     X_test = X.iloc[test_index:]
     y_test = y.iloc[test_index:]
 
-    return X_train, X_test, y_train, y_test
+    return X_train, y_train, X_test, y_test
 
 def code_mean(data, cat_feature, real_feature):
     """
@@ -32,7 +35,7 @@ def code_mean(data, cat_feature, real_feature):
     """
     return dict(data.groupby(cat_feature)[real_feature].mean())
 
-def prepareData(series, lag_start, lag_end, test_size, target_encoding=False):
+def prepareScalarData(series, lag_start, lag_end, test_size, target_encoding=False):
     """
         series: pd.DataFrame
             dataframe with timeseries
@@ -87,6 +90,19 @@ def prepareData(series, lag_start, lag_end, test_size, target_encoding=False):
     #return X_train, X_test, y_train, y_test
     return X, y
 
+def prepareData(dataframe, lag_start=3, lag_end=10):
+    data = pd.DataFrame(dataframe.copy())
+    data.columns = ["y"]
+
+    # Adding the lag of the target variable from 3 steps (hours) up to 24
+    for i in range(lag_start, lag_end):
+        data["lag_{}".format(i)] = data.y.shift(i)
+
+    y = data.dropna().y
+    X = data.dropna().drop(['y'], axis=1)
+    return X, y
+    #return timeseries_train_test_split(X, y, test_size=test_size)
+
 
 def processDbDataForLrTestInput(dataframe):
     dataframe = dataframe.drop(columns="system")
@@ -105,16 +121,8 @@ def processDbDataForLrTestInput(dataframe):
     dataframe = dataframe.fillna(method='ffill')
     return dataframe
 
+def mean_absolute_percentage_error(y_true, y_pred):
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
 
 if __name__ == "__main__":
-    dataFrame = getDatafromDb()
-    dataFrame = processDbDataForLrTestInput(dataFrame)
-    #print(dataFrame)
-    hourlydat = dataFrame.resample('H').sum()
-    #print(hourlydat)
-    #print(dataFrame.CpuUsage.dtype)
-    X_test, y_train = \
-        prepareData(hourlydat[['CpuUsage']], lag_start=3, lag_end=10, test_size=.9, target_encoding=True)
-    print(X_test)
-    predict = linearRegression(X_test)
-    print(predict)
+    print("")
