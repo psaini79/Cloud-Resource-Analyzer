@@ -105,15 +105,15 @@ def getDatafromDb():
 	stframe = pd.DataFrame(data=stData)
 	stframe.rename({"node_cpu_seconds_total": "steal"}, inplace=True, axis=1)
 
-	print(uframe)
-	print(sframe)
-	print(ioframe)
-	print(iframe)
+	#print(uframe)
+	#print(sframe)
+	#print(ioframe)
+	#print(iframe)
 
-	print(nframe)
-	print(siframe)
-	print(stframe)
-	print(iframe)
+	#print(nframe)
+	#print(siframe)
+	#print(stframe)
+	#print(iframe)
 
 	uframe.reset_index(drop=True, inplace=True)
 	sframe.reset_index(drop=True, inplace=True)
@@ -124,8 +124,8 @@ def getDatafromDb():
 	siframe.reset_index(drop=True, inplace=True)
 	stframe.reset_index(drop=True, inplace=True)
 	iframe.reset_index(drop=True, inplace=True)
-	print("Done Done Done Done Done")
-	print("-------------------------------------------")
+	#print("Done Done Done Done Done")
+	#print("-------------------------------------------")
 	cuFrame = uframe[uframe.time.isin(sframe.time)]
 	cioFrame = ioframe[ioframe.time.isin(sframe.time)]
 	cirFrame = irframe[irframe.time.isin(sframe.time)]
@@ -133,16 +133,17 @@ def getDatafromDb():
 	csiFrame = siframe[siframe.time.isin(sframe.time)]
 	cstFrame = stframe[stframe.time.isin(sframe.time)]
 	ciFrame = iframe[iframe.time.isin(sframe.time)]
-	print(cuFrame)
-	print(cioFrame)	
-	print("-------------------------------------------")
-	print("End End End End End End")
+	#print(cuFrame)
+	#print(cioFrame)
+	#print("-------------------------------------------")
+	#print("End End End End End End")
 	#dataframe = pd.concat([sframe, uframe], ignore_index=True)
 	#dataframe = pd.concat([sframe, uframe['user'], ioframe['iowait'], irframe['irq'], nframe['nice'], siframe['softirq'], stframe['steal'], iframe['idle']], axis=1, sort=True)
 	dataframe = pd.concat([sframe, cuFrame['user'], cioFrame['iowait'], cirFrame['irq'], cnFrame['nice'], csiFrame['softirq'], cstFrame['steal'], ciFrame['idle']], axis=1, sort=True)
+
 	#close the sesssion
 	con.db_close()
-	return dataframe
+	return getCpuUtilization(dataframe)
 
 def getCpuUtilization(dframe):
 	"""
@@ -152,6 +153,8 @@ def getCpuUtilization(dframe):
 	last_idle = 0
 	last_total = 0
 	cpuUtilPct = []
+	totalCpu = []
+	usedCpu = []
 	colN = getColumnNames(dframe)
 	for index, row in dframe.iterrows():
 		#print("index: ", index)
@@ -165,7 +168,11 @@ def getCpuUtilization(dframe):
 		#print(CpuUtilization)
 		#print("**************************")
 		cpuUtilPct.append(CpuUtilization)
-	dframe['CpuUtilization']= cpuUtilPct
+		totalCpu.append(cTotal)
+		usedCpu.append(cTotal-idle)
+	dframe['CpuProvisioned'] = totalCpu
+	dframe['CpuUsage'] = usedCpu
+	dframe['CpuUtilization'] = cpuUtilPct
 	return dframe
 
 	
@@ -193,8 +200,8 @@ def cSum(rdata, cnames):
 if __name__ == "__main__":
 	dFrame = getDatafromDb()
 	print(dFrame)
-	df = getCpuUtilization(dFrame)
-	print(df)
+	#df = getCpuUtilization(dFrame)
+	#print(df)
 	"""
 	print("==============================")
 	print(dFrame['system'][0])
