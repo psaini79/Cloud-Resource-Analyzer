@@ -9,6 +9,8 @@ from predict import linearRegression
 from database import  getDatafromDb
 from models import buildLinearRegressionModel
 from models import saveModel
+from dataprocessor import processDbDataForLrTestInput
+from dataprocessor import prepareData
 
 application = Flask(__name__)
 application.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
@@ -24,12 +26,13 @@ def home():
 def triggerML():
     error = None
     if request.method == 'POST':
-        #tenantname = request.form['tenant_name']
-        #period = request.form['period']
+        tenantname = request.form['tenant_name']
+        period = request.form['period']
+        interval = request.form['interval']
         dataFrame = getDatafromDb()
         dataFrame = processDbDataForLrTestInput(dataFrame)
         X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
-        predicted_data = linearRegression(X_test)
+        predictedData = linearRegression(X_test)
         #write into promql
         return home()
 
@@ -39,5 +42,12 @@ def buildLrModel():
     saveModel(lrmodel)
 
 if __name__ == "__main__":
-    application.debug = True 
+    application.debug = True
     application.run()
+#     dataFrame = getDatafromDb()
+#     dataFrame = processDbDataForLrTestInput(dataFrame)
+#     X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
+#     print(y_test)
+#     predictedData = linearRegression(X_test)
+#     print(predictedData)
+

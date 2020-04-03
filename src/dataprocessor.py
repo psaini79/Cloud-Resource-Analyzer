@@ -3,10 +3,6 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import TimeSeriesSplit
-from database import  getDatafromDb
-from predict import linearRegression
-from models import buildLinearRegressionModel
-from models import saveModel
 
 
 # for time-series cross-validation set 5 folds
