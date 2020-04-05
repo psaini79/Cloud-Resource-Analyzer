@@ -3,6 +3,7 @@ import settings
 import psycopg2
 import pandas as pd
 import pandas.io.sql as sqlio
+import datetime
 
 class DatabaseError(Exception):
 	""" This will be raised when there is any db related error"""
@@ -40,6 +41,25 @@ class PostgresDb(object):
 		""" Executes the query and return the data in panda frame"""
 		dataframe = sqlio.read_sql_query(query, self.connection)
 		return dataframe.dropna()
+
+	def db_insert(self, predictionLst, interval=5):
+		"""
+		Insert data into predict_info db
+		"""
+		dt = datetime.datetime.now()
+		idx = 0
+		timer = 0
+		for i in range(len(predictionLst)):
+			timer += interval
+			#tDelta = dt + datetime.timedelta(minutes = interval)
+			tDelta = dt + datetime.timedelta(minutes = timer)
+			time = tDelta.strftime("%Y-%m-%d %H:%M:%S")
+			query = "INSERT INTO predict_info (id, time_stamp, cpu_utilization) VALUES (%s, %s, %s)" 
+			qInput = (i+1, time, predictionLst[i])  
+			#print(query)
+			self.session.execute(query, qInput)
+			idx += 1
+		self.connection.commit()	
 
 	def db_close(self):
 		self.session.close()	
@@ -198,8 +218,12 @@ def cSum(rdata, cnames):
 	
 
 if __name__ == "__main__":
-	dFrame = getDatafromDb()
-	print(dFrame)
+	db_client = PostgresDb()
+	lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
+	#db_client.db_insert(lst)
+	#db_client.db_close()
+	#dFrame = getDatafromDb()
+	#print(dFrame)
 	#df = getCpuUtilization(dFrame)
 	#print(df)
 	"""
