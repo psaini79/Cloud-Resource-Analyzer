@@ -54,8 +54,8 @@ class PostgresDb(object):
 			#tDelta = dt + datetime.timedelta(minutes = interval)
 			tDelta = dt + datetime.timedelta(minutes = timer)
 			time = tDelta.strftime("%Y-%m-%d %H:%M:%S")
-			query = "INSERT INTO predict_info (id, time_stamp, cpu_utilization) VALUES (%s, %s, %s)" 
-			qInput = (i+1, time, predictionLst[i])  
+			query = "INSERT INTO predict_info (time_stamp, cpu_utilization) VALUES (%s, %s)"
+			qInput = (time, predictionLst[i])
 			#print(query)
 			self.session.execute(query, qInput)
 			idx += 1

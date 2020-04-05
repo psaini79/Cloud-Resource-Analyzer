@@ -26,9 +26,9 @@ def home():
 def triggerML():
     error = None
     if request.method == 'POST':
-        tenantname = request.form['tenant_name']
+        #tenantname = request.form['tenant_name']
         period = request.form['period']
-        interval = request.form['interval']
+        #interval = request.form['interval']
         dataFrame = getDatafromDb()
         dataFrame = processDbDataForLrTestInput(dataFrame)
         X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
@@ -51,4 +51,5 @@ if __name__ == "__main__":
 #     print(y_test)
 #     predictedData = linearRegression(X_test)
 #     print(predictedData)
+#     writeDataToDb(predictedData)
 
