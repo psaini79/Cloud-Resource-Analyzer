@@ -214,8 +214,13 @@ def cSum(rdata, cnames):
 		#print(cn, rdata[cn])
 		cTotal += rdata[cn]
 	#print("cTotal: ", cTotal)
-	return cTotal 
-	
+	return cTotal
+
+
+def writeDataToDb(list):
+	db_client = PostgresDb()
+	db_client.db_insert(list)
+	db_client.db_close()
 
 if __name__ == "__main__":
 	db_client = PostgresDb()

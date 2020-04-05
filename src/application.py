@@ -6,7 +6,7 @@ from flask import Flask
 from flask import request
 from settings import SECRET_KEY
 from predict import linearRegression
-from database import  getDatafromDb
+from database import getDatafromDb, writeDataToDb
 from models import buildLinearRegressionModel
 from models import saveModel
 from dataprocessor import processDbDataForLrTestInput
@@ -34,6 +34,7 @@ def triggerML():
         X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
         predictedData = linearRegression(X_test)
         #write into promql
+        writeDataToDb(predictedData)
         return home()
 
 @application.route('/build_lr_ml', methods=['POST'])
