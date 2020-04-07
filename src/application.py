@@ -1,17 +1,17 @@
 #!flask/bin/python
 import os
 import json
+import settings 
 
 from flask import Flask
 from flask import request
-from settings import SECRET_KEY
 from Process import processPrediction
 from Process import processModelBuild
 
 
 application = Flask(__name__)
 application.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 
-application.config['SESSION_TYPE'] = SECRET_KEY
+application.config['SESSION_TYPE'] = settings.SECRET_KEY
 
 @application.route('/')
 def home():
@@ -41,7 +41,7 @@ def buildLrModel():
 
 
 if __name__ == "__main__":
-    application.debug = True
+    application.debug = settings.DEBUG 
     application.run(host="0.0.0.0", port="5000")
 #     dataFrame = getDatafromDb()
 #     dataFrame = processDbDataForLrTestInput(dataFrame)

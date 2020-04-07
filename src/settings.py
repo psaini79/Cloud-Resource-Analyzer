@@ -9,7 +9,7 @@ PROMQLDB_PASSWORD = os.environ.get('PROMQLDB_PASSWORD') or 'mypass'
 PROMQL_PORT = int(os.environ.get('PROMQL_PORT','5432'))
 
 ML_LR_MODEL = os.environ.get('ML_LR_MODEL') or basedir+'/../models/linear_regression.model'
-DEBUG = True
+DEBUG = False 
 
 if not PROMQL_HOSTNAME:
     logger.error("No MySQL Hostname specified! Exiting!")
