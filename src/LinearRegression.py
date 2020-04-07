@@ -37,13 +37,15 @@ warnings.filterwarnings('ignore')
 # In[2]:
 
 
-base_path = r'../../datasets/'
+base_path = r'../'
+data_path = '/home/julian/cra/datasets/'
+model_path = base_path+'models/'
 
 
 # In[3]:
 
 
-path = base_path+'2013-7/'                     # use your path
+path = data_path+'2013-7/'                     # use your path
 all_files = glob.glob(os.path.join(path, "*.csv"))     # advisable to use os.path.join 
 df_from_each_file = (pd.read_csv(f, sep = ';\t').assign(VM=os.path.basename(f).split('.')[0]) for f in all_files)
 concatenated_df   = pd.concat(df_from_each_file)
@@ -52,7 +54,7 @@ concatenated_df   = pd.concat(df_from_each_file)
 # In[4]:
 
 
-path = base_path+'2013-8/'                     
+path = data_path+'2013-8/'                     
 all_files = glob.glob(os.path.join(path, "*.csv"))     
 df_from_each_file = (pd.read_csv(f, sep = ';\t').assign(VM=os.path.basename(f).split('.')[0]) for f in all_files)
 concatenated_df8   = pd.concat(df_from_each_file)
@@ -61,7 +63,7 @@ concatenated_df8   = pd.concat(df_from_each_file)
 # In[5]:
 
 
-path = base_path+'2013-9/'                   
+path = data_path+'2013-9/'                   
 all_files = glob.glob(os.path.join(path, "*.csv"))  
 df_from_each_file = (pd.read_csv(f, sep = ';\t').assign(VM=os.path.basename(f).split('.')[0]) for f in all_files)
 concatenated_df9   = pd.concat(df_from_each_file)
@@ -107,6 +109,11 @@ concatenated_df["received_prev"] = concatenated_df['Network received throughput 
 concatenated_df["received_diff"] = concatenated_df['Network received throughput [KB/s]']- concatenated_df["received_prev"]
 concatenated_df["transmitted_prev"] = concatenated_df['Network transmitted throughput [KB/s]'].shift(1)
 concatenated_df["transmitted_diff"] = concatenated_df['Network transmitted throughput [KB/s]']- concatenated_df["transmitted_prev"]
+
+concatenated_df["write_prev"] = concatenated_df['Disk write throughput [KB/s]'].shift(1)
+concatenated_df["write_diff"] = concatenated_df['Disk write throughput [KB/s]']- concatenated_df["write_prev"]
+concatenated_df["read_prev"] = concatenated_df['Disk read throughput [KB/s]'].shift(1)
+concatenated_df["read_diff"] = concatenated_df['Disk read throughput [KB/s]']- concatenated_df["read_prev"]
 
 
 # ### Fill in missing values using forward propagating function from pandas
@@ -213,6 +220,12 @@ from sklearn.model_selection import cross_val_score
 # In[16]:
 
 
+hourlydat
+
+
+# In[17]:
+
+
 data = pd.DataFrame(hourlydat['CPU usage [MHZ]'].copy())
 data.columns = ["y"]
 
@@ -222,9 +235,10 @@ for i in range(3, 25):
 
 y = data.dropna().y
 X = data.dropna().drop(['y'], axis=1)
+X
 
 
-# In[17]:
+# In[18]:
 
 
 # for time-series cross-validation set 5 folds 
@@ -246,7 +260,61 @@ def timeseries_train_test_split(X, y, test_size):
     return X_train, X_test, y_train, y_test
 
 
-# In[18]:
+# In[19]:
+
+
+
+# reserve 30% of data for testing
+X_train, X_test, y_train, y_test = timeseries_train_test_split(X, y, test_size=0.3)
+print(X_test)
+
+
+# In[20]:
+
+
+def plotModelResults(model, X_train=X_train, X_test=X_test, plot_intervals=False, plot_anomalies=False):
+    prediction = model.predict(X_test)
+
+    plt.style.use('seaborn-white')
+    plt.figure(figsize=(15, 7))
+    plt.plot(prediction, "orange", label="Prediction", linewidth=2.0)
+    plt.plot(y_test.values,label="Actual Usage", linewidth=2.0)
+    
+    error = mean_absolute_percentage_error(prediction, y_test)
+    #plt.title("Mean Absolute Error: {0:.2f}%".format(error),  fontsize = 20)
+    plt.legend(loc="best", fontsize = 15)
+    plt.tight_layout()
+    plt.grid(True);
+
+
+# In[21]:
+
+
+#linear reg
+model = LinearRegression()
+model.fit(X_train, y_train)
+prediction = model.predict(X_test)
+#print(prediction)
+
+plotModelResults(model, plot_intervals=False)
+plotCoefficients(model)
+
+
+# In[22]:
+
+
+import pickle
+filename = model_path+'linear_regression.model'
+pickle.dump(model, open(filename, 'wb'))
+
+
+# In[23]:
+
+
+## Scaled Linear Regression MODELING
+
+
+# In[24]:
 
 
 def code_mean(data, cat_feature, real_feature):
@@ -288,6 +356,8 @@ def prepareData(series, lag_start, lag_end, test_size, target_encoding=False):
     # other features
     data['network received'] = hourlydat[['Network received throughput [KB/s]']]
     data['network transmitted'] = hourlydat[['Network transmitted throughput [KB/s]']]
+    data['disk read'] = hourlydat[['Disk read throughput [KB/s]']]
+    data['disk write'] = hourlydat[['Disk write throughput [KB/s]']]
     data['cpu diff'] = hourlydat[['CPU_diff']]
     data['received_prev'] = hourlydat[['received_prev']]
     data['core'] = hourlydat[['CPU cores']]
@@ -311,14 +381,14 @@ def prepareData(series, lag_start, lag_end, test_size, target_encoding=False):
     return X_train, X_test, y_train, y_test
 
 
-# In[19]:
+# In[25]:
 
 
 # reserve 30% of data for testing
 X_train, X_test, y_train, y_test =prepareData(hourlydat[['CPU usage [MHZ]']], lag_start=3, lag_end=10, test_size=0.3, target_encoding=True)
 
 
-# In[20]:
+# In[26]:
 
 
 def plotModelResults(model, X_train=X_train, X_test=X_test, plot_intervals=False, plot_anomalies=False):
@@ -360,7 +430,7 @@ def plotModelResults(model, X_train=X_train, X_test=X_test, plot_intervals=False
     plt.grid(True);
 
 
-# In[21]:
+# In[27]:
 
 
 def plotModelResultsScaler(model, X_train=X_train, X_test=X_test, plot_intervals=False, plot_anomalies=False):
@@ -409,14 +479,14 @@ def plotModelResultsScaler(model, X_train=X_train, X_test=X_test, plot_intervals
     plt.grid(True);
 
 
-# In[22]:
+# In[28]:
 
 
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 
 
-# In[23]:
+# In[29]:
 
 
 ### Linear Regression
@@ -432,11 +502,16 @@ plotModelResultsScaler(lr, X_train=X_train_scaled, X_test=X_test_scaled,
 plotCoefficients(lr)
 
 
-# In[27]:
+# In[30]:
 
 
 import pickle
-from settings import ML_LR_MODEL
-filename = ML_LR_MODEL
+filename = model_path+'scaled_linear_regression.model'
 pickle.dump(lr, open(filename, 'wb'))
+
+
+# In[ ]:
+
+
+
 

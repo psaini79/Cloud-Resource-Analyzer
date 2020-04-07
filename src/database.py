@@ -3,6 +3,7 @@ import settings
 import psycopg2
 import pandas as pd
 import pandas.io.sql as sqlio
+import datetime
 
 class DatabaseError(Exception):
 	""" This will be raised when there is any db related error"""
@@ -41,11 +42,43 @@ class PostgresDb(object):
 		dataframe = sqlio.read_sql_query(query, self.connection)
 		return dataframe.dropna()
 
+	def db_insert(self, predictionLst, interval=5):
+		"""
+		Insert data into predict_info db
+		"""
+		dt = datetime.datetime.now()
+		idx = 0
+		timer = 0
+		for i in range(len(predictionLst)):
+			timer += interval
+			#tDelta = dt + datetime.timedelta(minutes = interval)
+			tDelta = dt + datetime.timedelta(minutes = timer)
+			time = tDelta.strftime("%Y-%m-%d %H:%M:%S")
+			query = "INSERT INTO predict_info (time_stamp, cpu_utilization) VALUES (%s, %s)"
+			qInput = (time, predictionLst[i])
+			#print(query)
+			self.session.execute(query, qInput)
+			idx += 1
+		self.connection.commit()	
+
 	def db_close(self):
 		self.session.close()	
 		
 
-system = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'system'  AND name='node_cpu_seconds_total' ORDER BY time"
+#system = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'system'  AND name='node_cpu_seconds_total' ORDER BY time"
+
+def createQuery(mode, interval, timebucket=5):
+	"""
+	Creating Query
+	"""
+	if(interval != -1):
+		query = "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY five_min_bucket ORDER BY five_min_bucket" % (timebucket, mode, interval)
+	else:
+		query =  "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total' GROUP BY five_min_bucket ORDER BY five_min_bucket" %(timebucket, mode)
+	return query
+
+"""
+system = "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'system'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY five_min_bucket ORDER BY five_min_bucket" % (5, 1)
 
 irq = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'irq'  AND name='node_cpu_seconds_total' ORDER BY time"
 	
@@ -60,6 +93,7 @@ softirq = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE l
 steal = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'steal'  AND name='node_cpu_seconds_total' ORDER BY time"
 
 user = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'user'  AND name='node_cpu_seconds_total' ORDER BY time"
+"""
 
 def getDatafromDb():
 	#Creates a an object
@@ -72,14 +106,14 @@ def getDatafromDb():
 	#records = con.db_fetch()
 
 	#gets data in pandaframes
-	sData = con.db_getPDFrame(system)
-	uData = con.db_getPDFrame(user)
-	iData = con.db_getPDFrame(idle)
-	ioData = con.db_getPDFrame(iowait)
-	irData = con.db_getPDFrame(irq)
-	nData = con.db_getPDFrame(nice)
-	siData = con.db_getPDFrame(softirq)
-	stData = con.db_getPDFrame(steal)
+	sData = con.db_getPDFrame(createQuery('system', 1, 5))
+	uData = con.db_getPDFrame(createQuery('user', 1, 5))
+	iData = con.db_getPDFrame((createQuery('idle', 1, 5))
+	ioData = con.db_getPDFrame((createQuery('iowait', 1, 5))
+	irData = con.db_getPDFrame((createQuery('irq', 1, 5))
+	nData = con.db_getPDFrame((createQuery('nice', 1, 5))
+	siData = con.db_getPDFrame((createQuery('softirq', 1, 5))
+	stData = con.db_getPDFrame((createQuery('steal', 1, 5))
          
 	sframe = pd.DataFrame(data=sData)
 	sframe.rename({"node_cpu_seconds_total": "system"}, inplace=True, axis=1)
@@ -105,15 +139,15 @@ def getDatafromDb():
 	stframe = pd.DataFrame(data=stData)
 	stframe.rename({"node_cpu_seconds_total": "steal"}, inplace=True, axis=1)
 
-	print(uframe)
-	print(sframe)
-	print(ioframe)
-	print(iframe)
+	#print(uframe)
+	#print(sframe)
+	#print(ioframe)
+	#print(iframe)
 
-	print(nframe)
-	print(siframe)
-	print(stframe)
-	print(iframe)
+	#print(nframe)
+	#print(siframe)
+	#print(stframe)
+	#print(iframe)
 
 	uframe.reset_index(drop=True, inplace=True)
 	sframe.reset_index(drop=True, inplace=True)
@@ -124,8 +158,8 @@ def getDatafromDb():
 	siframe.reset_index(drop=True, inplace=True)
 	stframe.reset_index(drop=True, inplace=True)
 	iframe.reset_index(drop=True, inplace=True)
-	print("Done Done Done Done Done")
-	print("-------------------------------------------")
+	#print("Done Done Done Done Done")
+	#print("-------------------------------------------")
 	cuFrame = uframe[uframe.time.isin(sframe.time)]
 	cioFrame = ioframe[ioframe.time.isin(sframe.time)]
 	cirFrame = irframe[irframe.time.isin(sframe.time)]
@@ -133,16 +167,17 @@ def getDatafromDb():
 	csiFrame = siframe[siframe.time.isin(sframe.time)]
 	cstFrame = stframe[stframe.time.isin(sframe.time)]
 	ciFrame = iframe[iframe.time.isin(sframe.time)]
-	print(cuFrame)
-	print(cioFrame)	
-	print("-------------------------------------------")
-	print("End End End End End End")
+	#print(cuFrame)
+	#print(cioFrame)
+	#print("-------------------------------------------")
+	#print("End End End End End End")
 	#dataframe = pd.concat([sframe, uframe], ignore_index=True)
 	#dataframe = pd.concat([sframe, uframe['user'], ioframe['iowait'], irframe['irq'], nframe['nice'], siframe['softirq'], stframe['steal'], iframe['idle']], axis=1, sort=True)
 	dataframe = pd.concat([sframe, cuFrame['user'], cioFrame['iowait'], cirFrame['irq'], cnFrame['nice'], csiFrame['softirq'], cstFrame['steal'], ciFrame['idle']], axis=1, sort=True)
+
 	#close the sesssion
 	con.db_close()
-	return dataframe
+	return getCpuUtilization(dataframe)
 
 def getCpuUtilization(dframe):
 	"""
@@ -152,6 +187,8 @@ def getCpuUtilization(dframe):
 	last_idle = 0
 	last_total = 0
 	cpuUtilPct = []
+	totalCpu = []
+	usedCpu = []
 	colN = getColumnNames(dframe)
 	for index, row in dframe.iterrows():
 		#print("index: ", index)
@@ -165,7 +202,11 @@ def getCpuUtilization(dframe):
 		#print(CpuUtilization)
 		#print("**************************")
 		cpuUtilPct.append(CpuUtilization)
-	dframe['CpuUtilization']= cpuUtilPct
+		totalCpu.append(cTotal)
+		usedCpu.append(cTotal-idle)
+	dframe['CpuProvisioned'] = totalCpu
+	dframe['CpuUsage'] = usedCpu
+	dframe['CpuUtilization'] = cpuUtilPct
 	return dframe
 
 	
@@ -187,14 +228,31 @@ def cSum(rdata, cnames):
 		#print(cn, rdata[cn])
 		cTotal += rdata[cn]
 	#print("cTotal: ", cTotal)
-	return cTotal 
-	
+	return cTotal
+
+
+def writeDataToDb(list):
+	db_client = PostgresDb()
+	db_client.db_insert(list)
+	db_client.db_close()
 
 if __name__ == "__main__":
-	dFrame = getDatafromDb()
-	print(dFrame)
-	df = getCpuUtilization(dFrame)
-	print(df)
+
+	con = PostgresDb()
+	s = con.db_getPDFrame(createQuery('system', 1, 5))
+	print(s)
+	u = con.db_getPDFrame(createQuery('user', 1, 5))
+	print(u)
+	i = con.db_getPDFrame(createQuery('irq', 1, 5))
+	print(i)
+	#db_client = PostgresDb()
+	#lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
+	#db_client.db_insert(lst)
+	#db_client.db_close()
+	#dFrame = getDatafromDb()
+	#print(dFrame)
+	#df = getCpuUtilization(dFrame)
+	#print(df)
 	"""
 	print("==============================")
 	print(dFrame['system'][0])
