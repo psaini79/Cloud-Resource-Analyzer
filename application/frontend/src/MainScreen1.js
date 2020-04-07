@@ -1,102 +1,82 @@
-import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Grafana from './Grafana';
-import Resources3 from './Resources3';
-import Header1 from './Header1';
-function TabPanel(props) {
+
+import React, { Component, Fragment } from 'react';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { Button } from '@material-ui/core';
+import TextField from 'material-ui/TextField';
+import axios from 'axios';
 
 
-  const { children, value, index, ...other } = props;
+var apiBaseUrl = "http://129.146.192.214:8080/";
+//var apiBaseUrl = "http://localhost:8080";
+
+class TriggerML extends Component {
 
 
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </Typography>
-  );
+    constructor(props) {
+        super(props);
+        this.state = {
+            // ec2: [],
+            period: '',
+            userId: props.userId
+
+        }
+    }
+
+    handleTriggerML = () => {
+
+        // const { instance } = this.state;
+
+        //this.props.onCreate(instance);
+
+        var self = this;
+        //   console.log("prop values handlesubmit");
+        alert(this.props.userId);
+        var payload = {
+          
+            "period": this.state.period,
+            "userId": this.props.userId
+        }
+
+
+
+        axios.post(apiBaseUrl + "/trigger_ml", payload)
+            .then(function (response) {
+                console.log("Trigger sucessfull" + response.data);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+
+
+    }
+
+    render() {
+        return (
+
+            <MuiThemeProvider>
+                <TextField style={{ marginRight: 10 }}
+                    hintText="Enter the number of days to forecast"
+                    onChange={(event, newValue) => this.setState({ period: newValue })}
+                />
+
+                <Button variant="contained" color="primary" onClick={(event) => this.handleTriggerML(event)} >
+                    Trigger
+                </Button>
+            </MuiThemeProvider>
+
+        )
+
+
+
+
+    }
+
+
 }
 
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-    //   backgroundColor: theme.palette.background.paper,
-  },
-}));
-
-export default function SimpleTabs(props) {
-
-  console.log("User Id in Simple  " + props.userId);
-  const classes = useStyles();
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  return (
-
-    <Fragment >
-      <div  >
-
-        <Header1 />
-
-        <AppBar position="relative" style={style}>
-          <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
-            <Tab label="ENTER RESOURCES" {...a11yProps(0)} />
-            <Tab label="CURRENT WORKLOAD" {...a11yProps(1)} />
-            <Tab label="FORECAST" {...a11yProps(2)} />
-          </Tabs>
-        </AppBar>
-        <TabPanel value={value} index={0}>
-          <Resources3 userId = {props.userId}/>
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-          <Grafana />
-        </TabPanel>
-        <TabPanel value={value} index={2}>
-          <Grafana />
-        </TabPanel>
-      </div>
-    </Fragment>
 
 
 
-  );
 
-}
-const style = {
-  margin: 15,
-  padding: 5,
-  marginTop: 5,
-  marginBottom: 5,
-  marginLeft: 15,
-  align: 'center',
-  background: '#87CEFA'
-};
-
+export default TriggerML;
