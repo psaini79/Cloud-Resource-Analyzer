@@ -12,4 +12,5 @@ masterproject/backend/model/Tenancy.class
 masterproject/backend/model/UserInput.class
 masterproject/backend/model/EC2Instance.class
 masterproject/backend/service/UserService.class
+masterproject/backend/model/TriggerML.class
 masterproject/backend/Application.class
