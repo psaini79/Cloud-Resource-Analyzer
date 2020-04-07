@@ -71,7 +71,10 @@ def createQuery(mode, interval, timebucket=5):
 	"""
 	Creating Query
 	"""
-	query = "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY five_min_bucket ORDER BY five_min_bucket" % (timebucket, mode, interval)
+	if(interval != -1):
+		query = "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY five_min_bucket ORDER BY five_min_bucket" % (timebucket, mode, interval)
+	else:
+		query =  "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total' GROUP BY five_min_bucket ORDER BY five_min_bucket" %(timebucket, mode)
 	return query
 
 """
