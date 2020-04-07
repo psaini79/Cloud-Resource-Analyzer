@@ -10,6 +10,8 @@ source "$SCRIPT_DIR/functions.sh"
 
 ######  FIREWALL BLOCKS ENDS HERE ############
 
+systemctl stop firewalld
+systemctl disable firewalld
 ######  FIREWALL BLOCKS ENDS HERE ############
 
 ######  PYTHON VERSION CHANGE ############
