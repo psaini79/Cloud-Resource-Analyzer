@@ -7,7 +7,7 @@ from dataprocessor import processDbDataForLrTestInput
 from dataprocessor import prepareData
 
 def buildLinearRegressionModel():
-    dataFrame = getDatafromDb()
+    dataFrame = getDatafromDb(-1)
     dataFrame = processDbDataForLrTestInput(dataFrame)
     X_train, y_train = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
     model = LinearRegression()
