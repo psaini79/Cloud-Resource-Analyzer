@@ -95,7 +95,8 @@ steal = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE lab
 user = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'user'  AND name='node_cpu_seconds_total' ORDER BY time"
 """
 
-def getDatafromDb():
+def getDatafromDb(period):
+	timebucket = 5
 	#Creates a an object
 	con = PostgresDb()
 
@@ -106,14 +107,14 @@ def getDatafromDb():
 	#records = con.db_fetch()
 
 	#gets data in pandaframes
-	sData = con.db_getPDFrame(createQuery('system', 1, 5))
-	uData = con.db_getPDFrame(createQuery('user', 1, 5))
-	iData = con.db_getPDFrame((createQuery('idle', 1, 5))
-	ioData = con.db_getPDFrame((createQuery('iowait', 1, 5))
-	irData = con.db_getPDFrame((createQuery('irq', 1, 5))
-	nData = con.db_getPDFrame((createQuery('nice', 1, 5))
-	siData = con.db_getPDFrame((createQuery('softirq', 1, 5))
-	stData = con.db_getPDFrame((createQuery('steal', 1, 5))
+	sData = con.db_getPDFrame(createQuery('system', period, timebucket))
+	uData = con.db_getPDFrame(createQuery('user', period, timebucket))
+	iData = con.db_getPDFrame(createQuery('idle', period, timebucket))
+	ioData = con.db_getPDFrame(createQuery('iowait', period, timebucket))
+	irData = con.db_getPDFrame(createQuery('irq', period, timebucket))
+	nData = con.db_getPDFrame(createQuery('nice', period, timebucket))
+	siData = con.db_getPDFrame(createQuery('softirq', period, timebucket))
+	stData = con.db_getPDFrame(createQuery('steal', period, timebucket))
          
 	sframe = pd.DataFrame(data=sData)
 	sframe.rename({"node_cpu_seconds_total": "system"}, inplace=True, axis=1)

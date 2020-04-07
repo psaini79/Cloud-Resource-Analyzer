@@ -1,5 +1,4 @@
 #!flask/bin/python
-import os
 import json
 import settings 
 

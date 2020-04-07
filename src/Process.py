@@ -16,7 +16,7 @@ class processPrediction:
 
     def run(self, period):
         print("starting prediction for "+period+" days")
-        dataFrame = getDatafromDb()
+        dataFrame = getDatafromDb(period)
         dataFrame = processDbDataForLrTestInput(dataFrame)
         X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
         predictedData = linearRegression(X_test)
