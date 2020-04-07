@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import masterproject.backend.model.EC2Instance;
 import masterproject.backend.model.Login;
 import masterproject.backend.model.UserInput;
+import masterproject.backend.model.TriggerML;
 import masterproject.backend.service.UserService;
 
 
 
 @Controller
 @CrossOrigin(origins = "*")
+@RequestMapping(value = "/api")
 public class UserController {
 	
 	@Autowired
@@ -38,7 +40,8 @@ public class UserController {
 	
 	@RequestMapping(value = "/savetenancy", method = RequestMethod.POST)
 	public ResponseEntity<String> saveTenancy(@RequestBody UserInput userInput) {
-        
+		System.out.println("Save tnenancy controller");
+
 		String message = userService.saveTenancy(userInput);
 		return new ResponseEntity<String>(message, HttpStatus.OK);
 	}
@@ -87,5 +90,13 @@ public class UserController {
 		return new ResponseEntity<String>("Success", HttpStatus.OK);
 	}
 	
+	
+	@RequestMapping(value = "/trigger_ml", method = RequestMethod.POST)
+	public ResponseEntity<String>  triggerML(@RequestBody TriggerML triggerML) {
+        
+		System.out.println("Trigger ML controller");
+		String message = userService.triggerML(triggerML);
+		return new ResponseEntity<String>(message, HttpStatus.OK);
+	}
 	
 }

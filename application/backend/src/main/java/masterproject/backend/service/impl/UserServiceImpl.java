@@ -3,12 +3,17 @@ package masterproject.backend.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import masterproject.backend.dao.UserDao;
 import masterproject.backend.model.EC2Instance;
 import masterproject.backend.model.Login;
-
+import masterproject.backend.model.TriggerML;
 import masterproject.backend.model.UserInput;
 import masterproject.backend.service.UserService;
 
@@ -17,7 +22,6 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private UserDao userDao;
-
 
 	public List<Login> getUserDetails() {
 		return userDao.getUserDetails();
@@ -95,6 +99,23 @@ public class UserServiceImpl implements UserService {
 	public List<EC2Instance> getEC2InstanceDetailsById(String userId) {
 		// TODO Auto-generated method stub
 		return userDao.getEC2InstanceDetailsById(userId);
+	}
+
+	private RestTemplate restTemplate;
+	private HttpHeaders headers;
+
+	
+
+	public String triggerML(TriggerML triggerML) {
+
+		headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		HttpEntity<String> request = new HttpEntity<String>(triggerML.toString(), headers);
+		String url = "http://cra3ml-0.cra3ml.default.svc.cluster.local:5000/trigger_ml";
+		restTemplate = new RestTemplate();
+
+		return this.restTemplate.postForObject(url, request, String.class);
 	}
 
 }

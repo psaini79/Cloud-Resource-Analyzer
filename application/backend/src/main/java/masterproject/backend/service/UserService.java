@@ -5,6 +5,7 @@ import java.util.List;
 import masterproject.backend.model.EC2Instance;
 import masterproject.backend.model.Login;
 import masterproject.backend.model.UserInput;
+import masterproject.backend.model.TriggerML;
 
 public interface UserService {
 
@@ -25,5 +26,7 @@ public interface UserService {
 	String saveEC2Instance(UserInput userInput);
 
 	List<EC2Instance> getEC2InstanceDetailsById(String userId);
+	
+	String triggerML(TriggerML triggerML);
 
 }
