@@ -65,7 +65,17 @@ class PostgresDb(object):
 		self.session.close()	
 		
 
-system = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'system'  AND name='node_cpu_seconds_total' ORDER BY time"
+#system = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'system'  AND name='node_cpu_seconds_total' ORDER BY time"
+
+def createQuery(mode, interval, timebucket=5):
+	"""
+	Creating Query
+	"""
+	query = "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY five_min_bucket ORDER BY five_min_bucket" % (timebucket, mode, interval)
+	return query
+
+"""
+system = "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'system'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY five_min_bucket ORDER BY five_min_bucket" % (5, 1)
 
 irq = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'irq'  AND name='node_cpu_seconds_total' ORDER BY time"
 	
@@ -80,6 +90,7 @@ softirq = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE l
 steal = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'steal'  AND name='node_cpu_seconds_total' ORDER BY time"
 
 user = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'user'  AND name='node_cpu_seconds_total' ORDER BY time"
+"""
 
 def getDatafromDb():
 	#Creates a an object
@@ -92,14 +103,14 @@ def getDatafromDb():
 	#records = con.db_fetch()
 
 	#gets data in pandaframes
-	sData = con.db_getPDFrame(system)
-	uData = con.db_getPDFrame(user)
-	iData = con.db_getPDFrame(idle)
-	ioData = con.db_getPDFrame(iowait)
-	irData = con.db_getPDFrame(irq)
-	nData = con.db_getPDFrame(nice)
-	siData = con.db_getPDFrame(softirq)
-	stData = con.db_getPDFrame(steal)
+	sData = con.db_getPDFrame(createQuery('system', 1, 5))
+	uData = con.db_getPDFrame(createQuery('user', 1, 5))
+	iData = con.db_getPDFrame((createQuery('idle', 1, 5))
+	ioData = con.db_getPDFrame((createQuery('iowait', 1, 5))
+	irData = con.db_getPDFrame((createQuery('irq', 1, 5))
+	nData = con.db_getPDFrame((createQuery('nice', 1, 5))
+	siData = con.db_getPDFrame((createQuery('softirq', 1, 5))
+	stData = con.db_getPDFrame((createQuery('steal', 1, 5))
          
 	sframe = pd.DataFrame(data=sData)
 	sframe.rename({"node_cpu_seconds_total": "system"}, inplace=True, axis=1)
@@ -223,8 +234,16 @@ def writeDataToDb(list):
 	db_client.db_close()
 
 if __name__ == "__main__":
-	db_client = PostgresDb()
-	lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
+
+	con = PostgresDb()
+	s = con.db_getPDFrame(createQuery('system', 1, 5))
+	print(s)
+	u = con.db_getPDFrame(createQuery('user', 1, 5))
+	print(u)
+	i = con.db_getPDFrame(createQuery('irq', 1, 5))
+	print(i)
+	#db_client = PostgresDb()
+	#lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
 	#db_client.db_insert(lst)
 	#db_client.db_close()
 	#dFrame = getDatafromDb()
