@@ -1,23 +1,45 @@
-#
+apiVersion: v1
+kind: Service
+metadata:
+ name: cra3ml
+ labels:
+   app: cra3ml-dep
+spec:
+ ports:
+ - port: 8080
+   name: app3-appport
+ - port: 8081
+   name: app3-onslport
+ - port: 22
+   name: app3-sshport
+ - port: 9090
+   name: app3-pmport
+ - port: 3001
+   name: app3-reactport
+ - port: 5901
+   name: app3-vncport
+ clusterIP: None 
+ selector:
+   app: cra3ml-dep
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet  
 metadata:
   name: cra3ml
   labels:
     app: cra3ml-dep
 spec:
+  serviceName: "cra3ml"
+  replicas: 1
   selector:
     matchLabels:
-     app: cra3ml-dep
-  strategy:
-    type: Recreate
+      app: cra3ml-dep 
   template:
     metadata:
       labels:
         app: cra3ml-dep
     spec:
-      hostname: crapphost 
+      hostname: crapphost
       volumes:
       - name: cgroup1
         hostPath:
@@ -39,15 +61,15 @@ spec:
          medium: Memory
       initContainers:
       - name: testcon
-        image: psaini2019/cra:v1.0 
+        image: psaini2019/cra:v1.0
         imagePullPolicy: "IfNotPresent"
         command:
         - "/bin/bash"
         - "-c"
-        - "curl -OL https://github.com/psaini79/Cloud-Resource-Analyzer/blob/master/setup_scripts/setup_cra_app.sh && cp setup_cra_app.sh /scripts_app && chmod 777 /scripts_app/setup_cra_app.sh"
+        - "curl -OL https://github.com/psaini79/Cloud-Resource-Analyzer/raw/master/setup_scripts/setup_cra_ml.sh && cp setup_cra_ml.sh /scripts_app && chmod 777 /scripts_app/setup_cra_ml.sh"
         volumeMounts:
         - mountPath: /scripts_ml
-          name: scriptsmlvol 
+          name: scriptsmlvol
         - mountPath: /scripts_app
           name: scriptsappvol
       containers:
@@ -77,7 +99,7 @@ spec:
           name: app3-onslport
         - containerPort: 22
           name: app3-sshport
-        - containerPort: 9090 
+        - containerPort: 9090
           name: app3-pmport
         - containerPort: 3001
           name: app3-reactport
