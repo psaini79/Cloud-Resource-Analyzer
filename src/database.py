@@ -71,14 +71,15 @@ def createQuery(mode, interval, timebucket=5):
 	"""
 	Creating Query
 	"""
+	print("Creating query for mode", mode, " interval ", interval," time bucket", timebucket)
 	if(interval != -1):
-		query = "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY five_min_bucket ORDER BY five_min_bucket" % (timebucket, mode, interval)
+		query = "SELECT time_bucket('%s minutes', time) AS timebucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY timebucket ORDER BY timebucket" % (timebucket, mode, interval)
 	else:
-		query =  "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total' GROUP BY five_min_bucket ORDER BY five_min_bucket" %(timebucket, mode)
+		query =  "SELECT time_bucket('%s minutes', time) AS timebucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = '%s'  AND name='node_cpu_seconds_total' GROUP BY timebucket ORDER BY timebucket" %(timebucket, mode)
 	return query
 
 """
-system = "SELECT time_bucket('%s minutes', time) AS five_min_bucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'system'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY five_min_bucket ORDER BY five_min_bucket" % (5, 1)
+system = "SELECT time_bucket('%s minutes', time) AS timebucket, avg(value) AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'system'  AND name='node_cpu_seconds_total'  AND time > ( NOW() - interval '%s day' ) GROUP BY timebucket ORDER BY timebucket" % (5, 1)
 
 irq = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labels->>'cpu' = '0' and labels->>'mode' = 'irq'  AND name='node_cpu_seconds_total' ORDER BY time"
 	
@@ -96,7 +97,7 @@ user = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labe
 """
 
 def getDatafromDb(period):
-	timebucket = 5
+	timebucket = 1
 	#Creates a an object
 	con = PostgresDb()
 
@@ -161,13 +162,13 @@ def getDatafromDb(period):
 	iframe.reset_index(drop=True, inplace=True)
 	#print("Done Done Done Done Done")
 	#print("-------------------------------------------")
-	cuFrame = uframe[uframe.time.isin(sframe.time)]
-	cioFrame = ioframe[ioframe.time.isin(sframe.time)]
-	cirFrame = irframe[irframe.time.isin(sframe.time)]
-	cnFrame = nframe[nframe.time.isin(sframe.time)]
-	csiFrame = siframe[siframe.time.isin(sframe.time)]
-	cstFrame = stframe[stframe.time.isin(sframe.time)]
-	ciFrame = iframe[iframe.time.isin(sframe.time)]
+	cuFrame = uframe[uframe.timebucket.isin(sframe.timebucket)]
+	cioFrame = ioframe[ioframe.timebucket.isin(sframe.timebucket)]
+	cirFrame = irframe[irframe.timebucket.isin(sframe.timebucket)]
+	cnFrame = nframe[nframe.timebucket.isin(sframe.timebucket)]
+	csiFrame = siframe[siframe.timebucket.isin(sframe.timebucket)]
+	cstFrame = stframe[stframe.timebucket.isin(sframe.timebucket)]
+	ciFrame = iframe[iframe.timebucket.isin(sframe.timebucket)]
 	#print(cuFrame)
 	#print(cioFrame)
 	#print("-------------------------------------------")
@@ -239,19 +240,19 @@ def writeDataToDb(list):
 
 if __name__ == "__main__":
 
-	con = PostgresDb()
-	s = con.db_getPDFrame(createQuery('system', 1, 5))
-	print(s)
-	u = con.db_getPDFrame(createQuery('user', 1, 5))
-	print(u)
-	i = con.db_getPDFrame(createQuery('irq', 1, 5))
-	print(i)
+	#con = PostgresDb()
+	#s = con.db_getPDFrame(createQuery('system', 1, 5))
+	#print(s)
+	#u = con.db_getPDFrame(createQuery('user', 1, 5))
+	#print(u)
+	#i = con.db_getPDFrame(createQuery('irq', 1, 5))
+	#print(i)
 	#db_client = PostgresDb()
 	#lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
 	#db_client.db_insert(lst)
 	#db_client.db_close()
-	#dFrame = getDatafromDb()
-	#print(dFrame)
+	dFrame = getDatafromDb(1)
+	print(dFrame)
 	#df = getCpuUtilization(dFrame)
 	#print(df)
 	"""

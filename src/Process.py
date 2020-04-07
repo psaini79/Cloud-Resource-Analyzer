@@ -3,8 +3,8 @@ from predict import linearRegression
 from database import getDatafromDb, writeDataToDb
 from models import buildLinearRegressionModel
 from models import saveModel
-from dataprocessor import processDbDataForLrTestInput
-from dataprocessor import prepareData
+#from dataprocessor import processDbDataForLrTestInput
+from dataprocessor import *
 
 class processPrediction:
     pName = None
@@ -38,3 +38,14 @@ class processModelBuild:
     def run(self, model):
         lrmodel = buildLinearRegressionModel()
         saveModel(lrmodel)
+
+
+if __name__ == "__main__":
+    dataFrame = getDatafromDb(1)
+    dataFrame = processDbDataForLrTestInput(dataFrame)
+    X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
+    predictedData = linearRegression(X_test)
+    print(y_test)
+    print(predictedData)
+    error = mean_absolute_percentage_error(predictedData, y_test)
+    print("Mean Absolute Error: {0:.2f}%".format(error))

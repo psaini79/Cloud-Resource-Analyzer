@@ -3,3 +3,4 @@ src/.idea/
 src/__pycache__/
 venv/
 .idea/
+*.pyc

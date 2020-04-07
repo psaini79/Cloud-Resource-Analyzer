@@ -33,5 +33,6 @@ pip install -r requirements.txt
 print_message "Create Python Virtual env Completed"
 
 print_message "Starting the application"
-python ./src/application.py &
+mkdir -p /var/log/cra
+python src/application.py >& /var/log/cra/ml_logs.txt &
 ######## CLONE PROJECT BLOCK BEGIN HERE #############

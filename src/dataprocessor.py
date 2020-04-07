@@ -109,11 +109,11 @@ def processDbDataForLrTestInput(dataframe):
     dataframe = dataframe.drop(columns="softirq")
     dataframe = dataframe.drop(columns="steal")
     dataframe = dataframe.drop(columns="idle")
-    dataframe['weekday'] = dataframe['time'].dt.dayofweek
+    dataframe['weekday'] = dataframe['timebucket'].dt.dayofweek
     dataframe['weekend'] = ((dataframe.weekday) // 5 == 1).astype(float)
-    dataframe['month'] = dataframe.time.dt.month
-    dataframe['day'] = dataframe.time.dt.day
-    dataframe.set_index('time', inplace=True)
+    dataframe['month'] = dataframe.timebucket.dt.month
+    dataframe['day'] = dataframe.timebucket.dt.day
+    dataframe.set_index('timebucket', inplace=True)
     dataframe = dataframe.fillna(method='ffill')
     return dataframe
 
