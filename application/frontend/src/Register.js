@@ -24,7 +24,7 @@ class Register extends Component {
     console.log("nextProps", nextProps);
   }
   handleClick(event, role) {
-    var apiBaseUrl="http://129.146.192.214:8080";
+    var apiBaseUrl="https://cloudanalyser.info/api";
     var self = this;
     //To be done:check for empty values before hitting submit
     //  if(this.state.firstName.length>0 && this.state.lastName.length>0 && this.state.email.length>0 && this.state.password.length>0){

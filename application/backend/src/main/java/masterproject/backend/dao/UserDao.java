@@ -13,6 +13,7 @@ public interface UserDao {
 	List<Login> getUserDetailsById(String userId);
 	
 	List<Login>  getUserDetailsAll();
+	
 	String saveUserDetails(UserInput userInput);
 	
 	List<Login> login(UserInput userInput);
