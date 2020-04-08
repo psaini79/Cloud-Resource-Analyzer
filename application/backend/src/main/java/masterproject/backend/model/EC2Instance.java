@@ -1,7 +1,5 @@
 package masterproject.backend.model;
 
-
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,52 +15,65 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "EC2Instance")
 public class EC2Instance {
-	
+//	
+//	@Id
+//	@Column(name ="Id")
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	private String id;
+//
+//	@Column(name ="ec2InstanceName")
+//	private String ec2InstanceName;
+//	
+//	@JsonIgnore
+//	 @ManyToOne(cascade = {CascadeType.ALL})
+//	    @JoinColumn(name="ec2Instance_Id")
+//	    private Tenancy tenancy;
+
 	@Id
-	@Column(name ="Id")
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String id;
 
-	@Column(name ="ec2InstanceName")
+	@Column(name = "ec2InstanceName")
 	private String ec2InstanceName;
+
+	// @JsonIgnore
+	// @ManyToOne(cascade = {CascadeType.ALL})
 	
-	@JsonIgnore
-	 @ManyToOne(cascade = {CascadeType.ALL})
-	    @JoinColumn(name="ec2Instance_Id")
-	    private Tenancy tenancy;
-	
-public EC2Instance(){
-	
-}
+	// @JoinColumn(name="ec2Instance_Id")
+	@ManyToOne()
+	private Tenancy tenancy;
 
-public EC2Instance(String ec2InstanceName){
-	this.ec2InstanceName = ec2InstanceName;
-}
+	public EC2Instance() {
 
-public String getId() {
-	return id;
-}
+	}
 
-public void setId(String id) {
-	this.id = id;
-}
+	public EC2Instance(String ec2InstanceName) {
+		this.ec2InstanceName = ec2InstanceName;
+	}
 
-public String getEc2InstanceName() {
-	return ec2InstanceName;
-}
+	public String getId() {
+		return id;
+	}
 
-public void setEc2InstanceName(String ec2InstanceName) {
-	this.ec2InstanceName = ec2InstanceName;
-}
+	public void setId(String id) {
+		this.id = id;
+	}
 
-public Tenancy getTenancy() {
-	return tenancy;
-}
+	public String getEc2InstanceName() {
+		return ec2InstanceName;
+	}
 
-public void setTenancy(Tenancy tenancy) {
-	this.tenancy = tenancy;
-}
-	
-	
+	public void setEc2InstanceName(String ec2InstanceName) {
+		this.ec2InstanceName = ec2InstanceName;
+	}
+
+	public Tenancy getTenancy() {
+		return tenancy;
+	}
+
+	public void setTenancy(Tenancy tenancy) {
+		this.tenancy = tenancy;
+	}
 
 }
