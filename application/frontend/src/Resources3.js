@@ -65,7 +65,7 @@ export default class Resources3 extends Component {
         this.setState({ instanceNames: instanceNamesTemp });
         // this.state.instanceNames = instanceNamesTemp;
         //this.state.isLoaded= true;
-        axios.get(apiBaseUrl + "ec2/id?userId=" + this.props.userId)
+        axios.get(apiBaseUrl + "/ec2/id?userId=" + this.props.userId)
             .then(function (response) {
                 console.log("Get successfull" + response.data[0].id);
                 instanceNamesTemp = [];
@@ -111,7 +111,7 @@ export default class Resources3 extends Component {
 
 
 
-        axios.post(apiBaseUrl + "savetenancy", payload)
+        axios.post(apiBaseUrl + "/savetenancy", payload)
             .then(function (response) {
                 console.log("Login successfull" + response.data);
             })
@@ -148,7 +148,7 @@ export default class Resources3 extends Component {
             "ec2InstanceValue": value,
             "ec2InstanceId": this.state.instanceId[value]
         }
-        axios.post(apiBaseUrl + "id/delete", payload)
+        axios.post(apiBaseUrl + "/id/delete", payload)
             .then(function (response) {
 
 
