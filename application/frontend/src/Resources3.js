@@ -17,8 +17,7 @@ import axios from 'axios';
 import { Button } from '@material-ui/core';
 import TextField from 'material-ui/TextField';
 
-
-var apiBaseUrl = "http://129.146.192.214:8080/";
+var apiBaseUrl="https://cloudanalyser.info/api";
 
 const useStyles = makeStyles({
     table: {

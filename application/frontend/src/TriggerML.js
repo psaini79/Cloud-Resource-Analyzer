@@ -6,7 +6,7 @@ import TextField from 'material-ui/TextField';
 import axios from 'axios';
 
 
-var apiBaseUrl = "http://129.146.192.214:8080/";
+var apiBaseUrl="https://cloudanalyser.info/api";
 //var apiBaseUrl = "http://localhost:8080";
 
 class TriggerML extends Component {
