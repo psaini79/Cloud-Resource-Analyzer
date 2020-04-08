@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "Login")
+@Table(name = "corp_tenancy_user_info")
 public class Login {
 
 	@Id
@@ -47,10 +47,10 @@ public class Login {
 	
 	@Column(name ="mobile_num")
 	private String mobileNum;
-	@JsonIgnore	
+	@JsonIgnore
 	@OneToOne(cascade = {CascadeType.ALL})
-	 @JoinColumn(name="tenancy_id")
-	 private Tenancy tenancy;
+	@JoinColumn(name="tenancy_id", nullable = true)
+	private Tenancy tenancy;
 	
 		
 	public String getUserId() {
