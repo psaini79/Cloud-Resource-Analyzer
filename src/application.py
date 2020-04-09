@@ -24,16 +24,18 @@ def triggerML():
     if request.method == 'POST':
         period = request.form['period']
         try:
-            begin = processPrediction(period)
+            processPrediction(period)
         except:
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
         return json.dumps({'Inprogress': True}), 200, {'ContentType': 'application/json'}
 
 
-@application.route('/build_lr_ml', methods=['POST'])
+@application.route('/build_ml', methods=['POST'])
 def buildLrModel():
+    if request.method == 'POST':
+        model = request.form['model']
     try:
-        begin = processModelBuild(1)
+        processModelBuild(model)
     except:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
     return json.dumps({'Inprogress': True}), 200, {'ContentType': 'application/json'}
