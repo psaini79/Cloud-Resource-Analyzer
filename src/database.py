@@ -5,6 +5,8 @@ import pandas as pd
 import pandas.io.sql as sqlio
 import datetime
 
+timebucket = 1
+
 class DatabaseError(Exception):
 	""" This will be raised when there is any db related error"""
 
@@ -42,7 +44,7 @@ class PostgresDb(object):
 		dataframe = sqlio.read_sql_query(query, self.connection)
 		return dataframe.dropna()
 
-	def db_insert(self, predictionLst, interval=5):
+	def db_insert(self, predictionLst, interval=1):
 		"""
 		Insert data into predict_info db
 		"""
@@ -97,7 +99,6 @@ user = "SELECT time, value AS \"node_cpu_seconds_total\" FROM metrics WHERE labe
 """
 
 def getDatafromDb(period):
-	timebucket = 1
 	#Creates a an object
 	con = PostgresDb()
 
@@ -235,7 +236,7 @@ def cSum(rdata, cnames):
 
 def writeDataToDb(list):
 	db_client = PostgresDb()
-	db_client.db_insert(list)
+	db_client.db_insert(list, timebucket)
 	db_client.db_close()
 
 if __name__ == "__main__":
