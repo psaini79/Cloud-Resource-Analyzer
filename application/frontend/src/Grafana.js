@@ -28,7 +28,7 @@ class Grafana extends Component {
        
         <Iframe
                 //url="http://www.youtube.com/embed/xDMP3i36naA"
-                url="http://cloudanalyser.info:3001"
+                url="https://cloudanalyser.info/grafana"
 				width="1000px"
         height="1000px"
         type="application/json"
