@@ -1,9 +1,9 @@
+
+import settings
 from multiprocessing import Process
 from predict import linearRegression
 from database import getDatafromDb, writeDataToDb
-from models import buildLinearRegressionModel
-from models import saveModel
-#from dataprocessor import processDbDataForLrTestInput
+from models import *
 from dataprocessor import *
 
 class processPrediction:
@@ -35,9 +35,16 @@ class processModelBuild:
          p.daemon = True  # Daemonize it
          p.start()  # Start the execution
 
-    def run(self, model):
-        lrmodel = buildLinearRegressionModel()
-        saveModel(lrmodel)
+    def run(self, mlName):
+        print("Building Model ", mlName)
+        if(mlName == "lr"):
+            model = buildLinearRegressionModel()
+            name = settings.ML_LR_MODEL
+        elif(mlName == "rf"):
+            model = buildRandomForestMNodel()
+            name =  settings.ML_RF_MODEL
+        saveModel(model, name)
+        print("Building Model", mlName, "completed")
 
 
 if __name__ == "__main__":
