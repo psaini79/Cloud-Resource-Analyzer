@@ -8,21 +8,27 @@ from dataprocessor import *
 
 class processPrediction:
     pName = None
-    def __init__(self, period):
-        p = Process(target=self.run, args=(period,))
+    def __init__(self, period, model):
+        p = Process(target=self.run, args=(period,model,))
         p.daemon = True                       # Daemonize it
         p.start()                             # Start the execution
         self.pName = p
 
-    def run(self, period):
-        print("starting prediction for "+period+" days")
+    def run(self, period, mlName):
+        print("starting prediction for "+period+" days"+ " with "+mlName)
         dataFrame = getDatafromDb(period)
         dataFrame = processDbDataForLrTestInput(dataFrame)
         X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
-        predictedData = linearRegression(X_test)
+        if(mlName == "LR"):
+            predictedData = linearRegression(X_test)
+        elif(mlName == "RF"):
+            predictedData = randomForest(X_test)
+        else:
+            print("Invalid Model"+ mlName)
+            return
         # write into promql
         writeDataToDb(predictedData)
-        print("completed prediction for "+ period)
+        print(mlName + " Model completed prediction for "+ period)
 
     def getStatus(self):
         return self.pName.is_alive()
@@ -37,12 +43,15 @@ class processModelBuild:
 
     def run(self, mlName):
         print("Building Model ", mlName)
-        if(mlName == "lr"):
+        if(mlName == "LR"):
             model = buildLinearRegressionModel()
             name = settings.ML_LR_MODEL
-        elif(mlName == "rf"):
+        elif(mlName == "RF"):
             model = buildRandomForestMNodel()
             name =  settings.ML_RF_MODEL
+        else:
+            print("Invalid Building Model", mlName, "completed")
+            return
         saveModel(model, name)
         print("Building Model", mlName, "completed")
 

@@ -22,9 +22,13 @@ def home():
 def triggerML():
     error = None
     if request.method == 'POST':
-        period = request.form['period']
+        period = request.form.get('period', 1)
+        model = request.form.get('model', 'lr').upper()
+        print("Prediction triggerd for"+period+" using model "+model)
+        if (model != "LR") and (model != "RF"):
+            return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
         try:
-            processPrediction(period)
+            processPrediction(period, model)
         except:
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
         return json.dumps({'Inprogress': True}), 200, {'ContentType': 'application/json'}
@@ -33,9 +37,12 @@ def triggerML():
 @application.route('/build_ml', methods=['POST'])
 def buildLrModel():
     if request.method == 'POST':
-        model = request.form['model']
+        model = request.form.get('model', 'lr').upper()
+        print("Build requested for model "+ model)
+    if (model != "LR") and (model != "RF"):
+        return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
     try:
-        processModelBuild(model)
+        processModelBuild(model.upper())
     except:
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
     return json.dumps({'Inprogress': True}), 200, {'ContentType': 'application/json'}

@@ -7,10 +7,10 @@ PROMQL_USERNAME = os.environ.get('PROMQL_USERNAME') or 'postgres'
 PROMQL_DB_NAME = os.environ.get('PROMQL_DB_NAME') or 'postgres'
 PROMQLDB_PASSWORD = os.environ.get('PROMQLDB_PASSWORD') or 'mypass'
 PROMQL_PORT = int(os.environ.get('PROMQL_PORT','5432'))
+DEBUG = bool(os.environ.get('APP_DEBUG','False'))
 
 ML_LR_MODEL = os.environ.get('ML_LR_MODEL') or basedir+'/../models/linear_regression.model'
 ML_RF_MODEL = os.environ.get('ML_RF_MODEL') or basedir+'/../models/randomforest_regression.model'
-DEBUG = False 
 
 if not PROMQL_HOSTNAME:
     logger.error("No MySQL Hostname specified! Exiting!")

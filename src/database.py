@@ -241,9 +241,9 @@ def writeDataToDb(list):
 
 if __name__ == "__main__":
 
-	#con = PostgresDb()
-	#s = con.db_getPDFrame(createQuery('system', 1, 5))
-	#print(s)
+	con = PostgresDb()
+	s = con.db_getPDFrame(createQuery('system', 1, 5))
+	print(s)
 	#u = con.db_getPDFrame(createQuery('user', 1, 5))
 	#print(u)
 	#i = con.db_getPDFrame(createQuery('irq', 1, 5))
