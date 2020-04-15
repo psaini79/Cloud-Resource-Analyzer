@@ -92,6 +92,18 @@ class Login extends Component {
           //var uploadScreen=[];
           // uploadScreen.push(<UploadPage appContext={self.props.appContext} role={self.state.loginRole}/>)
           // self.props.appContext.setState({loginPage:[],uploadScreen:uploadScreen})
+        }else if(response.data.token){
+          alert('data'+response.data.token)
+          console.log("Login successfull");
+          const config = {
+           headers: { Authorization: `Bearer ${response.data.token}` }
+          };
+           axios.defaults.headers.common = {'Authorization': `Bearer ${response.data.token}`}
+     //     axios.get(apiBaseUrl+'/ec2/id?userId=javainuse', payload,config)
+
+          uploadScreen.push(<SimpleTabs userId={userIdTemp} />)
+          self.props.appContext.setState({ loginPage: [], uploadScreen: uploadScreen })
+
         }
         else if (response.data.code === 204) {
           console.log("Username password do not match");
