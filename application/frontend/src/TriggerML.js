@@ -59,7 +59,7 @@ class TriggerML extends Component {
     }
 
     handleChange= (event) => {
-        alert(event.target.value);
+    //    alert(event.target.value);
         this.setState({algo: event.target.value});
     }
 

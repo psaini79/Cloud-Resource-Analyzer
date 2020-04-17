@@ -93,7 +93,7 @@ class Login extends Component {
           // uploadScreen.push(<UploadPage appContext={self.props.appContext} role={self.state.loginRole}/>)
           // self.props.appContext.setState({loginPage:[],uploadScreen:uploadScreen})
         }else if(response.data.token){
-          alert('data'+response.data.token)
+        //  alert('data'+response.data.token)
           console.log("Login successfull");
           const config = {
            headers: { Authorization: `Bearer ${response.data.token}` }
@@ -111,7 +111,7 @@ class Login extends Component {
         }
         else {
           console.log("Username does not exists");
-          alert("Username does not exist");
+        //  alert("Username does not exist");
         }
       })
       .catch(function (error) {
@@ -202,7 +202,7 @@ class Login extends Component {
         <MuiThemeProvider>
 
           <AppBar
-            title="Cloud Resource Analyzer - 
+            title="Cloud Resource Analyzer -
                     Monitor and Analyze Cloud Resources"
           />
         </MuiThemeProvider>
