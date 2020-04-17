@@ -13,9 +13,9 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "EC2Instance")
+@Table(name = "ec2_instance_info")
 public class EC2Instance {
-//	
+//
 //	@Id
 //	@Column(name ="Id")
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class EC2Instance {
 //
 //	@Column(name ="ec2InstanceName")
 //	private String ec2InstanceName;
-//	
+//
 //	@JsonIgnore
 //	 @ManyToOne(cascade = {CascadeType.ALL})
 //	    @JoinColumn(name="ec2Instance_Id")
@@ -34,15 +34,15 @@ public class EC2Instance {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private String id;
 
-	@Column(name = "ec2InstanceName")
+	@Column(name = "ec2instanceName")
 	private String ec2InstanceName;
 
 	// @JsonIgnore
 	// @ManyToOne(cascade = {CascadeType.ALL})
-	
-	// @JoinColumn(name="ec2Instance_Id")
-	@ManyToOne()
-	private Tenancy tenancy;
+
+	@JoinColumn(name="tenancy_id")
+		@ManyToOne()
+		private Tenancy tenancy;
 
 	public EC2Instance() {
 
