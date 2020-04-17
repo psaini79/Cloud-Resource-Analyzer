@@ -32,7 +32,7 @@ public class EC2Instance {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private String id;
+	private Integer id;
 
 	@Column(name = "ec2instanceName")
 	private String ec2InstanceName;
@@ -52,11 +52,11 @@ public class EC2Instance {
 		this.ec2InstanceName = ec2InstanceName;
 	}
 
-	public String getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 

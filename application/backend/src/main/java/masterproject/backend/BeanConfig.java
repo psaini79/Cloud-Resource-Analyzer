@@ -25,6 +25,7 @@ public class BeanConfig {
        DriverManagerDataSource dataSource = new DriverManagerDataSource();
        dataSource.setDriverClassName("org.postgresql.Driver");
        dataSource.setUrl("jdbc:postgresql://pg-prometheus-0.pg-prometheuss-lb.default.svc.cluster.local:5432/postgres");
+      // dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
        dataSource.setUsername( "postgres" );
        dataSource.setPassword( "mypass" );
        return dataSource;
