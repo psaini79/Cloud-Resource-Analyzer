@@ -2,6 +2,7 @@
 import settings
 from multiprocessing import Process
 from predict import linearRegression
+from predict import randomForest 
 from database import getDatafromDb, writeDataToDb
 from models import *
 from dataprocessor import *
