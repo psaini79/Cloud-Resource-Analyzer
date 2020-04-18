@@ -97,7 +97,7 @@ const style = {
   padding: 5,
   marginTop: 5,
   marginBottom: 5,
-  marginLeft: 15,
+  marginLeft: 0,
   align: 'center',
   background: '#87CEFA'
 };
