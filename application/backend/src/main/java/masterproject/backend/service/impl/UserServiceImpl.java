@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
 
 	public String triggerML(TriggerML triggerML) {
 
-		System.out.println(triggerML.getAlgo());
+		System.out.println(triggerML.getModel());
 		System.out.println(triggerML.getPeriod());
 		System.out.println(triggerML.getUserId());
 

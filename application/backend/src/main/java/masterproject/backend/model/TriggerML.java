@@ -4,7 +4,7 @@ public class TriggerML {
 
 	String userId;
 	String period;
-	String algo;
+	String model;
 	public String getUserId() {
 		return userId;
 	}
@@ -14,15 +14,16 @@ public class TriggerML {
 	public String getPeriod() {
 		return period;
 	}
+	public String getModel() {
+		return model;
+	}
+	public void setModel(String model) {
+		this.model = model;
+	}
 	public void setPeriod(String period) {
 		this.period = period;
 	}
-	public String getAlgo() {
-		return algo;
-	}
-	public void setAlgo(String algo) {
-		this.algo = algo;
-	}
+
 
 
 }
