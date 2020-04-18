@@ -6,7 +6,7 @@ import pandas.io.sql as sqlio
 import datetime
 import uuid
 
-timebucket = 1
+timebucket = 5
 
 class DatabaseError(Exception):
 	""" This will be raised when there is any db related error"""
@@ -45,13 +45,14 @@ class PostgresDb(object):
 		dataframe = sqlio.read_sql_query(query, self.connection)
 		return dataframe.dropna()
 
-	def db_insert(self, predictionLst, interval=1):
+	def db_insert(self, predictionLst, interval=5):
 		"""
 		Insert data into predict_info db
 		"""
 		dt = datetime.datetime.now()
 		idx = 0
 		timer = 0
+		print("Writing content size "+str(len(predictionLst)))
 		for i in range(len(predictionLst)):
 			timer += interval
 			#tDelta = dt + datetime.timedelta(minutes = interval)
@@ -206,11 +207,12 @@ def getCpuUtilization(dframe):
 		#print(CpuUtilization)
 		#print("**************************")
 		cpuUtilPct.append(CpuUtilization)
-		totalCpu.append(cTotal)
-		usedCpu.append(cTotal-idle)
+		totalCpu.append(total_delta)
+		usedCpu.append(total_delta-idle_delta)
 	dframe['CpuProvisioned'] = totalCpu
 	dframe['CpuUsage'] = usedCpu
 	dframe['CpuUtilization'] = cpuUtilPct
+	print("Get  content size " + str(len(dframe)))
 	return dframe
 
 	

@@ -18,8 +18,11 @@ class processPrediction:
     def run(self, period, mlName):
         print("starting prediction for "+period+" days"+ " with "+mlName)
         dataFrame = getDatafromDb(period)
+        print(dataFrame)
         dataFrame = processDbDataForLrTestInput(dataFrame)
         X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
+        print("y_test")
+        print(y_test)
         if(mlName == "LR"):
             predictedData = linearRegression(X_test)
         elif(mlName == "RF"):
@@ -29,6 +32,8 @@ class processPrediction:
             return
         # write into promql
         writeDataToDb(predictedData)
+        print("predicted")
+        print(predictedData)
         print(mlName + " Model completed prediction for "+ period)
 
     def getStatus(self):
@@ -60,6 +65,7 @@ class processModelBuild:
 if __name__ == "__main__":
     dataFrame = getDatafromDb(1)
     dataFrame = processDbDataForLrTestInput(dataFrame)
+    print(dataFrame)
     X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
     predictedData = linearRegression(X_test)
     print(y_test)
