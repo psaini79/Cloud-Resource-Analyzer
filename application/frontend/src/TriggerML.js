@@ -73,8 +73,8 @@ class TriggerML extends Component {
 
                     <InputLabel id="label" value="input" >ML Algorithm</InputLabel>
                     <Select labelId="label" id="select" value={this.state.model} style={{ marginRight: 10, minWidth: 100 }} onChange={this.handleChange} >
-                        <MenuItem value="Linear Regression">Linear Regression</MenuItem>
-                        <MenuItem value="Random Forest">Random Forest</MenuItem>
+                        <MenuItem value="lr">Linear Regression</MenuItem>
+                        <MenuItem value="rf">Random Forest</MenuItem>
                     </Select>
 
                 </div>
