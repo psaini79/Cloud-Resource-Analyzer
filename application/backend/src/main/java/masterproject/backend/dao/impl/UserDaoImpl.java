@@ -68,7 +68,7 @@ public class UserDaoImpl implements UserDao {
 		 session.beginTransaction();
 		 String hql ="Delete FROM EC2Instance E WHERE E.id = :id";
 			Query query = session.createQuery(hql);
-			query.setParameter("id",userInput.getEc2InstanceId());
+			query.setParameter("id",Integer.parseInt(userInput.getEc2InstanceId()));
 
 			
 			int count3 = query.executeUpdate();

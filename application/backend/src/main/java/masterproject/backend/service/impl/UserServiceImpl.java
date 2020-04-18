@@ -166,7 +166,7 @@ public class UserServiceImpl implements UserService {
 
 
 		headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
 		System.out.println(triggerML.toString());
 		HttpEntity<String> request = new HttpEntity<String>(triggerML.toString(), headers);
