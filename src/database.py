@@ -4,6 +4,7 @@ import psycopg2
 import pandas as pd
 import pandas.io.sql as sqlio
 import datetime
+import uuid
 
 timebucket = 1
 
@@ -56,8 +57,8 @@ class PostgresDb(object):
 			#tDelta = dt + datetime.timedelta(minutes = interval)
 			tDelta = dt + datetime.timedelta(minutes = timer)
 			time = tDelta.strftime("%Y-%m-%d %H:%M:%S")
-			query = "INSERT INTO predict_info (time_stamp, cpu_utilization) VALUES (%s, %s)"
-			qInput = (time, predictionLst[i])
+			query = "INSERT INTO predict_info (uuid, time_stamp, cpu_utilization) VALUES (%s, %s, %s)"
+			qInput = (str(uuid.uuid4()), time, predictionLst[i])
 			#print(query)
 			self.session.execute(query, qInput)
 			idx += 1
@@ -241,19 +242,19 @@ def writeDataToDb(list):
 
 if __name__ == "__main__":
 
-	con = PostgresDb()
-	s = con.db_getPDFrame(createQuery('system', 1, 5))
-	print(s)
+	#con = PostgresDb()
+	#s = con.db_getPDFrame(createQuery('system', 1, 5))
+	#print(s)
 	#u = con.db_getPDFrame(createQuery('user', 1, 5))
 	#print(u)
 	#i = con.db_getPDFrame(createQuery('irq', 1, 5))
 	#print(i)
-	#db_client = PostgresDb()
-	#lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
-	#db_client.db_insert(lst)
+	db_client = PostgresDb()
+	lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
+	db_client.db_insert(lst)
 	#db_client.db_close()
-	dFrame = getDatafromDb(1)
-	print(dFrame)
+	#dFrame = getDatafromDb(1)
+	#print(dFrame)
 	#df = getCpuUtilization(dFrame)
 	#print(df)
 	"""

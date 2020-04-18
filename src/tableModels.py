@@ -12,7 +12,7 @@ Base = declarative_base()
 class PredictInfo(Base):
     __tablename__ = 'predict_info'
 
-    #id = Column(String(256), nullable=False, primary_key=True)
+    uuid = Column(String(256), nullable=False, primary_key=True)
     time_stamp = Column(DateTime(timezone=True), nullable=False, primary_key=True)
     cpu_utilization = Column(Float(12), nullable=False)
 
