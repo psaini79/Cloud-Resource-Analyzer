@@ -99,7 +99,7 @@ export default class Resources3 extends Component {
 
         var self = this;
         console.log("prop values handlesubmit");
-        alert(this.state.tenancyName);
+     //   alert(this.state.tenancyName);
         var payload = {
             //"name":this.state.username,
             // "emailId":this.state.password,
