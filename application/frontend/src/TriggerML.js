@@ -18,7 +18,7 @@ class TriggerML extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            algo: '',
+            model: '',
             period: '',
             userId: props.userId
 
@@ -39,7 +39,7 @@ class TriggerML extends Component {
             // "emailId":this.state.password,
             // "userId":this.state.loginRole
 
-            "algo": this.state.algo,
+            "model": this.state.model,
             "period": this.state.period,
             "userId": this.props.userId
         }
@@ -60,7 +60,7 @@ class TriggerML extends Component {
 
     handleChange= (event) => {
     //    alert(event.target.value);
-        this.setState({algo: event.target.value});
+        this.setState({model: event.target.value});
     }
 
     render() {
@@ -72,7 +72,7 @@ class TriggerML extends Component {
                 <div style={{ display: 'inline-block' }}>
 
                     <InputLabel id="label" value="input" >ML Algorithm</InputLabel>
-                    <Select labelId="label" id="select" value={this.state.algo} style={{ marginRight: 10, minWidth: 100 }} onChange={this.handleChange} >
+                    <Select labelId="label" id="select" value={this.state.model} style={{ marginRight: 10, minWidth: 100 }} onChange={this.handleChange} >
                         <MenuItem value="Linear Regression">Linear Regression</MenuItem>
                         <MenuItem value="Random Forest">Random Forest</MenuItem>
                     </Select>
