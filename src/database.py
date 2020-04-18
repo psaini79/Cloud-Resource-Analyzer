@@ -45,7 +45,7 @@ class PostgresDb(object):
 		dataframe = sqlio.read_sql_query(query, self.connection)
 		return dataframe.dropna()
 
-	def db_insert(self, predictionLst, interval=5):
+	def db_insert(self, pastTimeLst,pastdataLst,predictionLst, interval=5):
 		"""
 		Insert data into predict_info db
 		"""
@@ -58,8 +58,8 @@ class PostgresDb(object):
 			#tDelta = dt + datetime.timedelta(minutes = interval)
 			tDelta = dt + datetime.timedelta(minutes = timer)
 			time = tDelta.strftime("%Y-%m-%d %H:%M:%S")
-			query = "INSERT INTO predict_info (uuid, time_stamp, cpu_utilization) VALUES (%s, %s, %s)"
-			qInput = (str(uuid.uuid4()), time, predictionLst[i])
+			query = "INSERT INTO predict_info (uuid, past_time_stamp, past_cpu_utilization, time_stamp, cpu_utilization) VALUES (%s, %s, %s, %s, %s)"
+			qInput = (str(uuid.uuid4()), pastTimeLst[i], pastdataLst[i] ,time, predictionLst[i])
 			#print(query)
 			self.session.execute(query, qInput)
 			idx += 1
@@ -251,9 +251,15 @@ if __name__ == "__main__":
 	#print(u)
 	#i = con.db_getPDFrame(createQuery('irq', 1, 5))
 	#print(i)
+	timerd = []
+	dt = datetime.datetime.now()
+	timerd.append(dt + datetime.timedelta(minutes = 5))
+	timerd.append(dt + datetime.timedelta(minutes = 15))
 	db_client = PostgresDb()
-	lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
-	db_client.db_insert(lst)
+	#lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
+	lst = [0.30, 0.31]
+	lst2 =[0.32, 0.34] 
+	db_client.db_insert(timerd,lst2,lst)
 	#db_client.db_close()
 	#dFrame = getDatafromDb(1)
 	#print(dFrame)

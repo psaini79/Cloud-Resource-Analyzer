@@ -13,7 +13,9 @@ class PredictInfo(Base):
     __tablename__ = 'predict_info'
 
     uuid = Column(String(256), nullable=False, primary_key=True)
-    time_stamp = Column(DateTime(timezone=True), nullable=False, primary_key=True)
+    past_time_stamp = Column(DateTime(timezone=True), nullable=False)
+    past_cpu_utilization = Column(Float(12), nullable=False)
+    time_stamp = Column(DateTime(timezone=True), nullable=False)
     cpu_utilization = Column(Float(12), nullable=False)
 
 class CorpTenancyInfo(Base):
