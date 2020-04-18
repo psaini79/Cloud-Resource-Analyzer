@@ -33,7 +33,7 @@ class processPrediction:
             print("Invalid Model"+ mlName)
             return
         # write into promql
-        writeDataToDb(myframe['timebucket'], myframe['CpuUsage'], predictedData)
+        writeDataToDb(mlName, myframe['timebucket'], myframe['CpuUsage'], predictedData)
         print("predicted")
         print(predictedData)
         print(mlName + " Model completed prediction for "+ period)
