@@ -164,9 +164,11 @@ public class UserServiceImpl implements UserService {
 		System.out.println(triggerML.getPeriod());
 		System.out.println(triggerML.getUserId());
 
+
 		headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
+		System.out.println(triggerML.toString());
 		HttpEntity<String> request = new HttpEntity<String>(triggerML.toString(), headers);
 		String url = "http://cra3ml-0.cra3ml.default.svc.cluster.local:5000/trigger_ml";
 		restTemplate = new RestTemplate();

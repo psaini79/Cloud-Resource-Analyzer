@@ -24,6 +24,13 @@ public class TriggerML {
 		this.period = period;
 	}
 
+	
+	@Override
+	public String toString() {
+		
+		return "model =" + getModel() + " period =" + getPeriod();
+		
+	}
 
 
 }
