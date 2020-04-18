@@ -45,20 +45,21 @@ class PostgresDb(object):
 		dataframe = sqlio.read_sql_query(query, self.connection)
 		return dataframe.dropna()
 
-	def db_insert(self, pastTimeLst,pastdataLst,predictionLst, interval=5):
+	def db_insert(self, model, pastTimeLst,pastdataLst,predictionLst, interval=5):
 		"""
 		Insert data into predict_info db
 		"""
 		dt = datetime.datetime.now()
 		idx = 0
 		timer = 0
+		table_name = "predict_info_" + model.lower()
 		print("Writing content size "+str(len(predictionLst)))
 		for i in range(len(predictionLst)):
 			timer += interval
 			#tDelta = dt + datetime.timedelta(minutes = interval)
 			tDelta = dt + datetime.timedelta(minutes = timer)
 			time = tDelta.strftime("%Y-%m-%d %H:%M:%S")
-			query = "INSERT INTO predict_info (uuid, past_time_stamp, past_cpu_utilization, time_stamp, cpu_utilization) VALUES (%s, %s, %s, %s, %s)"
+			query = "INSERT INTO " + table_name + "(uuid, past_time_stamp, past_cpu_utilization, time_stamp, cpu_utilization) VALUES (%s, %s, %s, %s, %s)"
 			qInput = (str(uuid.uuid4()), pastTimeLst[i], pastdataLst[i] ,time, predictionLst[i])
 			#print(query)
 			self.session.execute(query, qInput)
@@ -243,9 +244,9 @@ def cSum(rdata, cnames):
 	return cTotal
 
 
-def writeDataToDb(pastTime, pastData, presentData):
+def writeDataToDb(model, pastTime, pastData, presentData):
 	db_client = PostgresDb()
-	db_client.db_insert(pastTime, pastData, presentData, timebucket)
+	db_client.db_insert(model, pastTime, pastData, presentData, timebucket)
 	db_client.db_close()
 
 if __name__ == "__main__":
@@ -265,7 +266,7 @@ if __name__ == "__main__":
 	#lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
 	lst = [0.30, 0.31]
 	lst2 =[0.32, 0.34] 
-	db_client.db_insert(timerd,lst2,lst)
+	db_client.db_insert('LR',timerd,lst2,lst)
 	#db_client.db_close()
 	#dFrame = getDatafromDb(1)
 	#print(dFrame)
