@@ -24,11 +24,12 @@ def triggerML():
     if request.method == 'POST':
         period = request.form.get('period', 1)
         model = request.form.get('model', 'lr').upper()
-        print("Prediction triggerd for"+period+" using model "+model)
+        print("Prediction triggerd for "+str(period))
+        print("triggerd for "+model)
         if (model != "LR") and (model != "RF"):
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
         try:
-            processPrediction(period, model)
+            processPrediction(str(period), model)
         except:
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
         return json.dumps({'Inprogress': True}), 200, {'ContentType': 'application/json'}
