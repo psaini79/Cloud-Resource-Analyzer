@@ -199,11 +199,17 @@ def getCpuUtilization(dframe):
 		#print("index: ", index)
 		cTotal = cSum(row, colN)
 		idle = row['idle']
+		if index == 0 :
+			last_idle = idle
+			last_total = cTotal
 		#print("**************************")
 		#print(cTotal, idle)
 		idle_delta, total_delta = idle - last_idle, cTotal - last_total
 		last_idle, last_total = idle, cTotal
-		CpuUtilization = 100 * (1.0 - idle_delta/total_delta)
+		if idle_delta == 0 :
+			CpuUtilization = 0
+		else:
+			CpuUtilization = 100 * (1.0 - idle_delta/total_delta)
 		#print(CpuUtilization)
 		#print("**************************")
 		cpuUtilPct.append(CpuUtilization)
@@ -237,9 +243,9 @@ def cSum(rdata, cnames):
 	return cTotal
 
 
-def writeDataToDb(list):
+def writeDataToDb(pastTime, pastData, presentData):
 	db_client = PostgresDb()
-	db_client.db_insert(list, timebucket)
+	db_client.db_insert(pastTime, pastData, presentData, timebucket)
 	db_client.db_close()
 
 if __name__ == "__main__":

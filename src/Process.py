@@ -19,10 +19,12 @@ class processPrediction:
         print("starting prediction for "+period+" days"+ " with "+mlName)
         dataFrame = getDatafromDb(period)
         print(dataFrame)
+        myframe = dataFrame.copy()
         dataFrame = processDbDataForLrTestInput(dataFrame)
         X_test, y_test = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
         print("y_test")
         print(y_test)
+        #print(y_test.timebucket)
         if(mlName == "LR"):
             predictedData = linearRegression(X_test)
         elif(mlName == "RF"):
@@ -31,7 +33,7 @@ class processPrediction:
             print("Invalid Model"+ mlName)
             return
         # write into promql
-        writeDataToDb(predictedData)
+        writeDataToDb(myframe['timebucket'], myframe['CpuUsage'], predictedData)
         print("predicted")
         print(predictedData)
         print(mlName + " Model completed prediction for "+ period)
