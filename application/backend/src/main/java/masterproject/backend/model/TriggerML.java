@@ -28,7 +28,7 @@ public class TriggerML {
 	@Override
 	public String toString() {
 		
-		return "model =" + getModel() + " period =" + getPeriod();
+		return "model=" + getModel() + "&period=" + getPeriod();
 		
 	}
 
