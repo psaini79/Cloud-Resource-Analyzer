@@ -2,10 +2,16 @@
 import settings
 from multiprocessing import Process
 from predict import linearRegression
-from predict import randomForest 
+from predict import randomForest
+from predict import arimaPrediction
 from database import getDatafromDb, writeDataToDb
-from models import *
-from dataprocessor import *
+from models import buildRandomForestMNodel
+from models import buildLinearRegressionModel
+from models import buildArimaModel
+from models import saveModel
+from dataprocessor import processDbDataForLrTestInput
+from dataprocessor import prepareData
+from dataprocessor import mean_absolute_percentage_error
 
 class processPrediction:
     pName = None
@@ -29,6 +35,8 @@ class processPrediction:
             predictedData = linearRegression(X_test)
         elif(mlName == "RF"):
             predictedData = randomForest(X_test)
+        elif (mlName == "ARIMA"):
+            predictedData = arimaPrediction(y_test)
         else:
             print("Invalid Model"+ mlName)
             return
@@ -57,6 +65,9 @@ class processModelBuild:
         elif(mlName == "RF"):
             model = buildRandomForestMNodel()
             name =  settings.ML_RF_MODEL
+        elif (mlName == "ARIMA"):
+            model = buildArimaModel()
+            name = settings.ML_RF_MODEL
         else:
             print("Invalid Building Model", mlName, "completed")
             return

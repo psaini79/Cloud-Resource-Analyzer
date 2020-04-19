@@ -26,7 +26,7 @@ def triggerML():
         model = request.form.get('model', 'lr').upper()
         print("Prediction triggerd for "+str(period))
         print("triggerd for "+model)
-        if (model != "LR") and (model != "RF"):
+        if (model != "LR") and (model != "RF") and (model != "ARIMA"):
             return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
         try:
             processPrediction(str(period), model)
@@ -40,7 +40,7 @@ def buildLrModel():
     if request.method == 'POST':
         model = request.form.get('model', 'lr').upper()
         print("Build requested for model "+ model)
-    if (model != "LR") and (model != "RF"):
+    if (model != "LR") and (model != "RF") and (model != "ARIMA"):
         return json.dumps({'success': False}), 500, {'ContentType': 'application/json'}
     try:
         processModelBuild(model.upper())

@@ -11,6 +11,7 @@ DEBUG = os.environ.get('APP_DEBUG') or False
 
 ML_LR_MODEL = os.environ.get('ML_LR_MODEL') or basedir+'/../models/linear_regression.model'
 ML_RF_MODEL = os.environ.get('ML_RF_MODEL') or basedir+'/../models/randomforest_regression.model'
+ML_ARIMA_MODEL = os.environ.get('ARIMA_RF_MODEL') or basedir+'/../models/arima.model'
 
 if not PROMQL_HOSTNAME:
     logger.error("No MySQL Hostname specified! Exiting!")

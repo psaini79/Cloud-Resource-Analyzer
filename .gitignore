@@ -4,3 +4,4 @@ src/__pycache__/
 venv/
 .idea/
 *.pyc
+machine_learning/.ipynb_checkpoints/
