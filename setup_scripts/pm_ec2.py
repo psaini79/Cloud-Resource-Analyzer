@@ -24,7 +24,7 @@ def restart_pm():
 
   ## Starting promethous server
   try:
-    cmd='''kill  -9 `ps -ef | grep prometheus.yml | grep -v "grep --color=auto prometheus.yml" | awk '{ print $2 }'`'''
+    cmd='''/opt/cra/software/prometheus-2.11.2.linux-amd64/./prometheus --config.file=/opt/cra/software/prometheus-2.11.2.linux-amd64/prometheus.yml'''
     out = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (output,error),retcode = out.communicate(),out.returncode
   except:

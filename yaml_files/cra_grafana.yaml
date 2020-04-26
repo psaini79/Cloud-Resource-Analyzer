@@ -44,7 +44,7 @@ spec:
         command:
         - "/bin/bash"
         - "-c"
-        - "curl -OL https://github.com/psaini2018/Cloud-Resource-Analyzer/raw/master/setup_scripts/setup_cra_app.sh && cp setup_cra_app.sh /scripts_app && chmod 777 /scripts_app/setup_cra_app.sh"
+        - "curl -OL https://github.com/psaini2018/Cloud-Resource-Analyzer/raw/master/setup_scripts/setup_cra_app.sh && https://github.com/psaini2018/Cloud-Resource-Analyzer/raw/master/setup_scripts/prometheus_template.yml && https://github.com/psaini2018/Cloud-Resource-Analyzer/raw/master/setup_scripts/pm_ec2.py && cp setup_cra_app.sh /scripts_app && cp prometheus_template.yml /scripts_app && cp pm_ec2.py /scripts_app  && chmod 777 /scripts_app/setup_cra_app.sh && chmod 777 /scripts_app/pm_ec2.py"
         volumeMounts:
         - mountPath: /scripts_ml
           name: scriptsmlvol 
