@@ -64,7 +64,13 @@ class PostgresDb(object):
 			#print(query)
 			self.session.execute(query, qInput)
 			idx += 1
-		self.connection.commit()	
+		self.connection.commit()
+
+	def db_deleteTbl(self, model):
+		table_name = "predict_info_" + model.lower()
+		query = "DELETE FROM " + table_name
+		self.session.execute(query)
+			
 
 	def db_close(self):
 		self.session.close()	
@@ -246,6 +252,7 @@ def cSum(rdata, cnames):
 
 def writeDataToDb(model, pastTime, pastData, presentData):
 	db_client = PostgresDb()
+	db_client.db_deleteTbl(model)
 	db_client.db_insert(model, pastTime, pastData, presentData, timebucket)
 	db_client.db_close()
 
