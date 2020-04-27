@@ -20,24 +20,23 @@ def randomForest(xtest):
     dataset = loadData.predict(xtest)
     return dataset
 
-def arimaPrediction(ytest):
+def arimaPrediction(ytest, history):
     pickleModel = settings.ML_ARIMA_MODEL
     pickle_in = open(pickleModel, "rb")
     loadData = pickle.load(pickle_in)
-    print("test")
-    print(ytest)
     print(loadData)
-    #history = [x for x in loadData]
     predictions = list()
-    for t in range(len(ytest)):
-        # model = ARIMA(loadData, order=(5, 1, 0))
-        model_fit = loadData.fit(disp=0)
-        output = model_fit.forecast()
-        yhat = output[0]
-        predictions.append(yhat[0])
-        obs = ytest[t]
-       # history.append(obs)
-    return predictions
+    print(len(history))
+    for t in range(len(ytest)): 
+        model = ARIMA(history, order=(5,1,0)) 
+        model_fit = model.fit(disp=0)
+        output = model_fit.forecast() 
+        yhat = output[0] 
+        predictions.append(yhat[0]) 
+        obs = ytest[t] 
+        history.append(obs)
+        print('predicted=%f, expected=%f' % (yhat, obs))
+    return predictions 
 
 if __name__ == "__main__":
     dataFrame = getDatafromDb()

@@ -21,6 +21,7 @@ class processPrediction:
         p.start()                             # Start the execution
         self.pName = p
 
+
     def run(self, period, mlName):
         print("starting prediction for "+period+" days"+ " with "+mlName)
         dataFrame = getDatafromDb(period)
@@ -36,7 +37,11 @@ class processPrediction:
         elif(mlName == "RF"):
             predictedData = randomForest(X_test)
         elif (mlName == "ARIMA"):
-            predictedData = arimaPrediction(y_test)
+            dataFrame = getDatafromDb(-1)
+            dataFrame = processDbDataForLrTestInput(dataFrame)
+            X_train, y_train = prepareData(dataFrame[['CpuUsage']], lag_start=3, lag_end=25)
+            history = [x for x in y_train]
+            predictedData = arimaPrediction(y_test, history)
         else:
             print("Invalid Model"+ mlName)
             return
@@ -67,7 +72,7 @@ class processModelBuild:
             name =  settings.ML_RF_MODEL
         elif (mlName == "ARIMA"):
             model = buildArimaModel()
-            name = settings.ML_RF_MODEL
+            name = settings.ML_ARIMA_MODEL
         else:
             print("Invalid Building Model", mlName, "completed")
             return
