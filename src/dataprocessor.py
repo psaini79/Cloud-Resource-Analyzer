@@ -101,14 +101,14 @@ def prepareData(dataframe, lag_start=3, lag_end=10):
 
 
 def processDbDataForLrTestInput(dataframe):
-    dataframe = dataframe.drop(columns="system")
-    dataframe = dataframe.drop(columns="user")
-    dataframe = dataframe.drop(columns="iowait")
-    dataframe = dataframe.drop(columns="irq")
-    dataframe = dataframe.drop(columns="nice")
-    dataframe = dataframe.drop(columns="softirq")
-    dataframe = dataframe.drop(columns="steal")
-    dataframe = dataframe.drop(columns="idle")
+    #dataframe = dataframe.drop(columns="system")
+    #dataframe = dataframe.drop(columns="user")
+    #dataframe = dataframe.drop(columns="iowait")
+    #dataframe = dataframe.drop(columns="irq")
+    #dataframe = dataframe.drop(columns="nice")
+    #dataframe = dataframe.drop(columns="softirq")
+    #dataframe = dataframe.drop(columns="steal")
+    #dataframe = dataframe.drop(columns="idle")
     dataframe['weekday'] = dataframe['timebucket'].dt.dayofweek
     dataframe['weekend'] = ((dataframe.weekday) // 5 == 1).astype(float)
     dataframe['month'] = dataframe.timebucket.dt.month

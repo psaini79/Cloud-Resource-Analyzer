@@ -201,18 +201,18 @@ def getCpuUtilization(dframe):
 	cpuUtilPct = []
 	totalCpu = []
 	usedCpu = []
+	timebuckets = []
 	colN = getColumnNames(dframe)
 	df = pd.DataFrame()
 	for index, row in dframe.iterrows():
 		#print("index: ", index)
 		cTotal = cSum(row, colN)
 		idle = row['idle']
-		if index == 0 :
-			last_idle = idle
-			last_total = cTotal
-			#continue
 		#print("**************************")
 		#print(cTotal, idle)
+		if index == 0 :
+			last_idle, last_total = idle, cTotal
+			continue
 		idle_delta, total_delta = idle - last_idle, cTotal - last_total
 		last_idle, last_total = idle, cTotal
 		if idle_delta == 0 :
@@ -222,11 +222,10 @@ def getCpuUtilization(dframe):
 		
 		#print(CpuUtilization)
 		#print("**************************")
-		if(CpuUtilization < 0):
-			continue
-		else:
-			df.append(row)
 		
+		if(total_delta < 0 or total_delta > 1000):
+			continue
+		timebuckets.append(row['timebucket'])
 		cpuUtilPct.append(CpuUtilization)
 		totalCpu.append(total_delta)
 		usedCpu.append(total_delta-idle_delta)
@@ -235,6 +234,7 @@ def getCpuUtilization(dframe):
 	#dframe['CpuUsage'] = usedCpu
 	#dframe['CpuUtilization'] = cpuUtilPct
 	#print("Get  content size " + str(len(dframe)))
+	df['timebucket'] = timebuckets
 	df['CpuProvisioned'] = totalCpu
 	df['CpuUsage'] = usedCpu
 	df['CpuUtilization'] = cpuUtilPct
