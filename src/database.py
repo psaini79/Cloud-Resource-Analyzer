@@ -202,6 +202,7 @@ def getCpuUtilization(dframe):
 	totalCpu = []
 	usedCpu = []
 	colN = getColumnNames(dframe)
+	df = pd.DataFrame()
 	for index, row in dframe.iterrows():
 		#print("index: ", index)
 		cTotal = cSum(row, colN)
@@ -209,6 +210,7 @@ def getCpuUtilization(dframe):
 		if index == 0 :
 			last_idle = idle
 			last_total = cTotal
+			#continue
 		#print("**************************")
 		#print(cTotal, idle)
 		idle_delta, total_delta = idle - last_idle, cTotal - last_total
@@ -217,16 +219,28 @@ def getCpuUtilization(dframe):
 			CpuUtilization = 0
 		else:
 			CpuUtilization = 100 * (1.0 - idle_delta/total_delta)
+		
 		#print(CpuUtilization)
 		#print("**************************")
+		if(CpuUtilization < 0):
+			continue
+		else:
+			df.append(row)
+		
 		cpuUtilPct.append(CpuUtilization)
 		totalCpu.append(total_delta)
 		usedCpu.append(total_delta-idle_delta)
-	dframe['CpuProvisioned'] = totalCpu
-	dframe['CpuUsage'] = usedCpu
-	dframe['CpuUtilization'] = cpuUtilPct
-	print("Get  content size " + str(len(dframe)))
-	return dframe
+		print(CpuUtilization, total_delta, total_delta-idle_delta)
+	#dframe['CpuProvisioned'] = totalCpu
+	#dframe['CpuUsage'] = usedCpu
+	#dframe['CpuUtilization'] = cpuUtilPct
+	#print("Get  content size " + str(len(dframe)))
+	df['CpuProvisioned'] = totalCpu
+	df['CpuUsage'] = usedCpu
+	df['CpuUtilization'] = cpuUtilPct
+	print("Get df content size " + str(len(df)))
+	print("Get dframe content size " + str(len(dframe)))
+	return df #dframe
 
 	
 def getColumnNames(df):
@@ -265,18 +279,18 @@ if __name__ == "__main__":
 	#print(u)
 	#i = con.db_getPDFrame(createQuery('irq', 1, 5))
 	#print(i)
-	timerd = []
-	dt = datetime.datetime.now()
-	timerd.append(dt + datetime.timedelta(minutes = 5))
-	timerd.append(dt + datetime.timedelta(minutes = 15))
-	db_client = PostgresDb()
+	#timerd = []
+	#dt = datetime.datetime.now()
+	#timerd.append(dt + datetime.timedelta(minutes = 5))
+	#timerd.append(dt + datetime.timedelta(minutes = 15))
+	#db_client = PostgresDb()
 	#lst = [0.30, 0.31, 0.32, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.40]
-	lst = [0.30, 0.31]
-	lst2 =[0.32, 0.34] 
-	db_client.db_insert('LR',timerd,lst2,lst)
+	#lst = [0.30, 0.31]
+	#lst2 =[0.32, 0.34] 
+	#db_client.db_insert('LR',timerd,lst2,lst)
 	#db_client.db_close()
-	#dFrame = getDatafromDb(1)
-	#print(dFrame)
+	dFrame = getDatafromDb(5)
+	print(dFrame)
 	#df = getCpuUtilization(dFrame)
 	#print(df)
 	"""
